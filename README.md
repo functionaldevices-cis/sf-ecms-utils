@@ -8,24 +8,24 @@ The JSON files are created based on the specification provided by Salesforce her
 
 You configure the program by filling in the `sf-import-builder-config.json` file that comes with the program.
 
-* "SourceFilterPath"
-  * Required: True
-  * Type: String
-  * Description: The full windows path of the source folder.
-* "OutputFolderPath"
-  * Required: True
-  * Type: String
-  * Description: The full windows path of the output folder.
-* "CreateZipPackage"
-  * Required: False
-  * Default: True
-  * Type: Boolean
-  * Description: Flag to control whether or not the program makes a ZIP package after it creates the new folder structure and files in the output folder.
-* "DeleteOutputFolders"
-  * Required: False
-  * Default: False
-  * Type: Boolean
-  * Description: Flag to control whether or not the program deletes the output folder after it finishes running. Useful if you only care about the final ZIP package.
+* `SourceFilterPath`
+  * **Required**: `True`
+  * **Type**: `String`
+  * **Description**: The full windows path of the source folder.
+* `OutputFolderPath`
+  * **Required**: `True`
+  * **Type**: `String`
+  * **Description**: The full windows path of the output folder.
+* `CreateZipPackage`
+  * **Required**: `False`
+  * **Default**: `True`
+  * **Type**: Boolean
+  * **Description**: Flag to control whether or not the program makes a ZIP package after it creates the new folder structure and files in the output folder.
+* `DeleteOutputFolders`
+  * **Required**: `False`
+  * **Default**: `False`
+  * **Type**: Boolean
+  * **Description**: Flag to control whether or not the program deletes the output folder after it finishes running. Useful if you only care about the final ZIP package.
 
 # Example
 
