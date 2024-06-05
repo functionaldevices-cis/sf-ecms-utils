@@ -1,4 +1,4 @@
-# SF Import Builder
+# Salesforce Enhanced CMS Import ZIP Builder
  
 This is a .NET 8 program which will automatically create an import ZIP package for Salesforce Enhanced CMSs. The ZIP file will contain individual folders for every importee file, containing the file, the `content.json`, and the `_meta.json`. Please note, any subfolders within the specified source folder will be automatically created in your Enhanced CMS space, and the folders will be uploaded into the matching folder structure.
 
