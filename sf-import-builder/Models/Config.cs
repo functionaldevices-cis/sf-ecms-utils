@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace SF_Import_Builder.Models;
@@ -33,4 +34,8 @@ public class Config {
     /************************************************* METHODS *************************************************/
     /***********************************************************************************************************/
 
+}
+
+[JsonSerializable(typeof(Config))]
+internal partial class ConfigContext : JsonSerializerContext {
 }

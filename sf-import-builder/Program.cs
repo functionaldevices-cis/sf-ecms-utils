@@ -15,7 +15,7 @@ internal class Program {
 
         // PARSE DATA
 
-        Config config = JsonSerializer.Deserialize<Config>(configFileContent) ?? throw new Exception("Error, unable to parse the config file. Please check that the file exists and has correctly formatted JSON data.");
+        Config config = JsonSerializer.Deserialize(configFileContent, ConfigContext.Default.Config) ?? throw new Exception("Error, unable to parse the config file. Please check that the file exists and has correctly formatted JSON data.");
 
         // RUN IMPORT BUILDER
 

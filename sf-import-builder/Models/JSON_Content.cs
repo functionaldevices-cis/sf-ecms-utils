@@ -47,3 +47,8 @@ public class JSON_Content {
     }
 
 }
+
+[JsonSourceGenerationOptions(WriteIndented = true)]
+[JsonSerializable(typeof(JSON_Content))]
+internal partial class JSON_ContentContext : JsonSerializerContext {
+}

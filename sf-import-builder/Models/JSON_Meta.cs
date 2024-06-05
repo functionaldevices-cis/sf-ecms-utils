@@ -21,3 +21,8 @@ public class JSON_Meta {
     }
 
 }
+
+[JsonSourceGenerationOptions(WriteIndented = true)]
+[JsonSerializable(typeof(JSON_Meta))]
+internal partial class JSON_MetaContext : JsonSerializerContext {
+}

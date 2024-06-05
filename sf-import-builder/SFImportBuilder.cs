@@ -1,8 +1,6 @@
 ﻿using SF_Import_Builder.Helpers;
 using SF_Import_Builder.Models;
-using System.Diagnostics;
 using System.IO.Compression;
-using System.Text.Encodings.Web;
 using System.Text.Json;
 
 namespace SF_Import_Builder; 
@@ -170,19 +168,14 @@ public class SFImportBuilder {
 
         // CREATE THE JSON FILES
 
-        JsonSerializerOptions serializer = new() {
-            Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
-            WriteIndented = true,
-        };
-
         this.FileOutputUtility.CreateFile(
             filePathWithinRoot: Path.Combine(outputFileWrapperFolderPath, "content.json"),
-            fileContents: JsonSerializer.Serialize(file.ContentJSON, serializer)
+            fileContents: JsonSerializer.Serialize(file.ContentJSON, JSON_ContentContext.Default.JSON_Content)
         );
 
         this.FileOutputUtility.CreateFile(
             filePathWithinRoot: Path.Combine(outputFileWrapperFolderPath, "_meta.json"),
-            fileContents: JsonSerializer.Serialize(file.MetaJSON, serializer)
+            fileContents: JsonSerializer.Serialize(file.MetaJSON, JSON_MetaContext.Default.JSON_Meta)
         );
 
     }
