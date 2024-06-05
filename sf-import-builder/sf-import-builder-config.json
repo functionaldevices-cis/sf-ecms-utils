@@ -1,6 +1,6 @@
 {
-    "SourceFolderPath": "C:\\Users\\AndyMercer\\OneDrive - Functional Devices, Inc\\Desktop\\Salesforce File Bulk Uploading\\Source",
+    "SourceFolderPath": "C:\\Users\\AndyMercer\\OneDrive - Functional Devices, Inc\\Desktop\\Salesforce File Bulk Uploading\\Files Full",
     "OutputFolderPath": "C:\\Users\\AndyMercer\\OneDrive - Functional Devices, Inc\\Desktop\\Salesforce File Bulk Uploading\\Output",
     "CreateZipPackage": true,
-    "DeleteOutputFolder": false
+    "DeleteOutputFolder": true
 }

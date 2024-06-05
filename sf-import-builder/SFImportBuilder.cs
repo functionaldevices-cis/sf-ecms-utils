@@ -1,5 +1,7 @@
 ﻿using SF_Import_Builder.Helpers;
 using SF_Import_Builder.Models;
+using System.Diagnostics;
+using System.IO.Compression;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 
@@ -37,6 +39,20 @@ public class SFImportBuilder {
             // PROCESS THE DIRECTORY
 
             this.ProcessDirectory(directory);
+
+            // CREATE ZIP FILE
+
+            if (this.Config.CreateZipPackage) {
+
+                ZipFile.CreateFromDirectory(Path.Combine(this.Config.OutputFolderPath, "ImportPackage"), Path.Combine(this.Config.OutputFolderPath, "ImportPackage.zip"));
+
+            }
+
+            if (this.Config.DeleteOutputFolder) {
+
+                Directory.Delete(Path.Combine(this.Config.OutputFolderPath, "ImportPackage"), true);
+
+            }
 
         } catch (Exception ex) {
 
@@ -139,7 +155,7 @@ public class SFImportBuilder {
 
         // CREATE PATHS
 
-        string outputFileWrapperFolderPath = Path.Combine(this.Config.OutputFolderPath, file.PathWithinRoot, file.Name);
+        string outputFileWrapperFolderPath = Path.Combine(this.Config.OutputFolderPath, "ImportPackage", file.PathWithinRoot, file.Name);
 
         // CREATE NEW FOLDERS
 

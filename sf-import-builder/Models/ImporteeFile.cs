@@ -89,12 +89,12 @@ public class ImporteeFile {
         _ => "application/octet-stream"
     };
 
-    public JSON_Content ContentJSON => new JSON_Content(
+    public JSON_Content ContentJSON => new(
         title: this.NameWithoutExtension,
         mimeType: this.MimeType
     );
 
-    public JSON_Meta MetaJSON => new JSON_Meta(
+    public JSON_Meta MetaJSON => new(
         path : this.PathWithinRoot
     );
 
