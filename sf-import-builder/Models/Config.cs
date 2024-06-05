@@ -13,19 +13,19 @@ public class Config {
 
     public string SourceFolderPath { get; set; }
     public string OutputFolderPath { get; set; }
-    public bool CreateImportZip { get; set; }
-    public bool DeleteImportFolder { get; set; }
+    public bool CreateZipPackage { get; set; }
+    public bool DeleteOutputFolder { get; set; }
 
     /***********************************************************************************************************/
     /*********************************************** CONSTRUCTOR ***********************************************/
     /***********************************************************************************************************/
 
-    public Config(string SourceFolderPath, string? OutputFolderPath = null, bool CreateImportZip = false, bool DeleteImportFolder = false) {
+    public Config(string SourceFolderPath, string? OutputFolderPath = null, bool CreateZipPackage = false, bool DeleteOutputFolder = false) {
         
         this.SourceFolderPath = SourceFolderPath;
         this.OutputFolderPath = OutputFolderPath ?? SourceFolderPath;
-        this.CreateImportZip = CreateImportZip;
-        this.DeleteImportFolder = DeleteImportFolder;
+        this.CreateZipPackage = CreateZipPackage;
+        this.DeleteOutputFolder = DeleteOutputFolder;
 
     }
 
