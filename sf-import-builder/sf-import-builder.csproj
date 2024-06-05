@@ -6,6 +6,14 @@
     <RootNamespace>SF_Import_Builder</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <Company>Functional Devices, Inc.</Company>
+    <Version>1.0.0</Version>
+    <Authors>Kelderic</Authors>
+    <Description>A .NET console program to automatically create Salesforce Enhanced CMS import ZIP packages.</Description>
+    <PackageProjectUrl>https://github.com/functionaldevices-cis/sf-import-builder</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/functionaldevices-cis/sf-import-builder</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageTags>dotnet;salesforce;salesforce-cms</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
