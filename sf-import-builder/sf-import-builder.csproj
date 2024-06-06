@@ -7,7 +7,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <Company>Functional Devices, Inc.</Company>
-    <Version>1.0.1</Version>
+    <Version>1.1.0</Version>
     <Authors>Kelderic</Authors>
     <Description>A .NET console program to automatically create Salesforce Enhanced CMS import ZIP packages.</Description>
     <PackageProjectUrl>https://github.com/functionaldevices-cis/sf-import-builder</PackageProjectUrl>
@@ -17,8 +17,8 @@
     <PublishAot>False</PublishAot>
     <PublishTrimmed>True</PublishTrimmed>
     <Title>SF Import Builder</Title>
-    <AssemblyVersion>1.0.1</AssemblyVersion>
-    <FileVersion>1.0.1</FileVersion>
+    <AssemblyVersion>1.1.0</AssemblyVersion>
+    <FileVersion>1.1.0</FileVersion>
     <ApplicationIcon>icon.ico</ApplicationIcon>
     <PackageIcon>icon.png</PackageIcon>
   </PropertyGroup>
