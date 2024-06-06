@@ -12,37 +12,17 @@ public class JSON_Content {
 
     public string title { get; set; }
 
-    [JsonIgnore(Condition = JsonIgnoreCondition.Always)]
-    public string mimeType { get; set; }
-
-    public Dictionary<string, Dictionary<string, Dictionary<string, string>>> contentBody => new() {
-        {
-            "sfdc_cms:media", new() {
-                {
-                    "source", new() {
-                        {
-                            "type",
-                            "file"
-                        },
-                        {
-                            "mimeType",
-                            this.mimeType
-                        }
-                    }
-                }
-            }
-        }
-    };
+    public Dictionary<string, Dictionary<string, Dictionary<string, string>>> contentBody { get; set; }
 
     /***********************************************************************************************************/
     /*********************************************** CONSTRUCTOR ***********************************************/
     /***********************************************************************************************************/
 
-    public JSON_Content(string title, string mimeType) {
+    public JSON_Content(string type, string title, Dictionary<string, Dictionary<string, Dictionary<string, string>>> contentBody) {
 
         this.type = "sfdc_cms__document";
         this.title = title;
-        this.mimeType = mimeType;
+        this.contentBody = contentBody;
 
     }
 
