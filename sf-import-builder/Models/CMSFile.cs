@@ -1,5 +1,5 @@
 ﻿namespace SF_Import_Builder.Models;
-public class ImporteeFile {
+public class CMSFile {
 
     /***********************************************************************************************************/
     /********************************************** PROPERTIES *************************************************/
@@ -49,7 +49,7 @@ public class ImporteeFile {
     /*********************************************** CONSTRUCTOR ***********************************************/
     /***********************************************************************************************************/
 
-    public ImporteeFile(string file_Name, string content_Title, string file_Path, string meta_Path, string content_MimeType, string? meta_ContentKey = null) {
+    public CMSFile(string file_Name, string content_Title, string file_Path, string meta_Path, string content_MimeType, string? meta_ContentKey = null) {
 
         this.File_Name = file_Name;
         this.File_Path = file_Path;

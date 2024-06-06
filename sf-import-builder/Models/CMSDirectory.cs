@@ -1,5 +1,5 @@
 ﻿namespace SF_Import_Builder.Models; 
-public class ImporteeDirectory {
+public class CMSDirectory {
 
     /***********************************************************************************************************/
     /********************************************** PROPERTIES *************************************************/
@@ -8,8 +8,8 @@ public class ImporteeDirectory {
     public string Name { get; init; }
     public string FullPath { get; init; }
     public string PathWithinRoot { get; init; }
-    public List<ImporteeDirectory> SubDirectories { get; init; }
-    public List<ImporteeFile> Files { get; init; }
+    public List<CMSDirectory> SubDirectories { get; init; }
+    public List<CMSFile> Files { get; init; }
 
 
 
@@ -17,7 +17,7 @@ public class ImporteeDirectory {
     /*********************************************** CONSTRUCTOR ***********************************************/
     /***********************************************************************************************************/
 
-    public ImporteeDirectory(string name, string fullPath, string pathWithinRoot) {
+    public CMSDirectory(string name, string fullPath, string pathWithinRoot) {
 
         this.Name = name;
         this.FullPath = fullPath;

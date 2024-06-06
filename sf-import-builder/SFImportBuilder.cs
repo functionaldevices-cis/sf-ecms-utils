@@ -29,7 +29,7 @@ public class SFImportBuilder {
 
             // SCAN THE DIRECTORY AND BUILD A LIST OF WHAT FOLDERS AND FILES NEED TO BE PROCESSED
 
-            ImporteeDirectory directory = this.ScanDirectory(
+            CMSDirectory directory = this.ScanDirectory(
                 directoryPath: this.Config.SourceFolderPath,
                 rootPath: this.Config.SourceFolderPath
             );
@@ -60,9 +60,9 @@ public class SFImportBuilder {
 
     }
 
-    private ImporteeDirectory ScanDirectory(string directoryPath, string rootPath) {
+    private CMSDirectory ScanDirectory(string directoryPath, string rootPath) {
 
-        ImporteeDirectory directory = new(
+        CMSDirectory directory = new(
             name: Path.GetFileName(directoryPath) ?? "",
             fullPath: directoryPath,
             pathWithinRoot: directoryPath.Replace(rootPath, "").Trim('\\')
@@ -113,9 +113,9 @@ public class SFImportBuilder {
 
     }
 
-    private ImporteeFile ScanFile(string filePath, string rootPath) {
+    private CMSFile ScanFile(string filePath, string rootPath) {
 
-        ImporteeFile file = new(
+        CMSFile file = new(
             file_Name: Path.GetFileName(filePath),
             content_Title: Path.GetFileNameWithoutExtension(filePath),
             file_Path: filePath,
@@ -127,7 +127,7 @@ public class SFImportBuilder {
 
     }
 
-    private void ProcessDirectory(ImporteeDirectory directory) {
+    private void ProcessDirectory(CMSDirectory directory) {
 
         // PROCESS THE FILES THAT ARE DIRECTLY IN THIS DIRECTORY
 
@@ -149,7 +149,7 @@ public class SFImportBuilder {
 
     }
 
-    private void ProcessFile(ImporteeFile file) {
+    private void ProcessFile(CMSFile file) {
 
         // CREATE PATHS
 
