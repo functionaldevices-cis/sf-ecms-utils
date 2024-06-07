@@ -179,6 +179,7 @@ public class SFImportBuilder {
         );
 
     }
+
     private string ConvertExtensionToMimeType(string extension) {
 
         return extension switch {
