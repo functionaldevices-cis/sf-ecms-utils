@@ -20,24 +20,14 @@ public class CMSFile {
     public JSON_Content Content_JSON => new(
         type: "sfdc_cms__document",
         title: this.Content_Title,
-        contentBody: new() {
-            {
-                "sfdc_cms:media", new() {
-                    {
-                        "source", new() {
-                            {
-                                "type",
-                                "file"
-                            },
-                            {
-                                "mimeType",
-                                this.Content_MimeType
-                            }
-                        }
-                    }
-                }
-            }
-        }
+        contentBody: new(
+            sfdc_cms_media: new(
+                source: new(
+                    _type: "file",
+                    mimeType: this.Content_MimeType
+                )
+            )
+        )
     );
 
     public JSON_Meta Meta_JSON => new(

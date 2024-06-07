@@ -2,33 +2,40 @@
 
 namespace SF_Import_Builder.Models;
 
-public class JSON_Content {
+public class JSON_Content_Source {
 
     /***********************************************************************************************************/
     /********************************************** PROPERTIES *************************************************/
     /***********************************************************************************************************/
 
-    public string type { get; set; }
+    [JsonPropertyName("type")]
+    public string _type { get; set; }
 
-    public string title { get; set; }
+    public string mimeType { get; set; }
 
-    public JSON_Content_ContentBody contentBody { get; set; }
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    [JsonPropertyName("ref")]
+    public string? _ref { get; set; }
+
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public int? size { get; set; }
 
     /***********************************************************************************************************/
     /*********************************************** CONSTRUCTOR ***********************************************/
     /***********************************************************************************************************/
 
-    public JSON_Content(string type, string title, JSON_Content_ContentBody contentBody) {
+    public JSON_Content_Source(string _type, string mimeType, string? _ref = null, int? size = null) {
 
-        this.type = "sfdc_cms__document";
-        this.title = title;
-        this.contentBody = contentBody;
+        this._type = _type;
+        this.mimeType = mimeType;
+        this._ref = _ref;
+        this.size = size;
 
     }
 
 }
 
 [JsonSourceGenerationOptions(WriteIndented = true)]
-[JsonSerializable(typeof(JSON_Content))]
-internal partial class JSON_ContentContext : JsonSerializerContext {
+[JsonSerializable(typeof(JSON_Content_Source))]
+internal partial class JSON_Content_SourceContext : JsonSerializerContext {
 }

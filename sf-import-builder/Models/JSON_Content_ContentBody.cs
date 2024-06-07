@@ -2,33 +2,28 @@
 
 namespace SF_Import_Builder.Models;
 
-public class JSON_Content {
+public class JSON_Content_ContentBody {
 
     /***********************************************************************************************************/
     /********************************************** PROPERTIES *************************************************/
     /***********************************************************************************************************/
 
-    public string type { get; set; }
-
-    public string title { get; set; }
-
-    public JSON_Content_ContentBody contentBody { get; set; }
+    [JsonPropertyName("sfdc_cms:media")]
+    public JSON_Content_SFDCMedia sfdc_cms_media { get; set; }
 
     /***********************************************************************************************************/
     /*********************************************** CONSTRUCTOR ***********************************************/
     /***********************************************************************************************************/
 
-    public JSON_Content(string type, string title, JSON_Content_ContentBody contentBody) {
+    public JSON_Content_ContentBody(JSON_Content_SFDCMedia sfdc_cms_media) {
 
-        this.type = "sfdc_cms__document";
-        this.title = title;
-        this.contentBody = contentBody;
+        this.sfdc_cms_media = sfdc_cms_media;
 
     }
 
 }
 
 [JsonSourceGenerationOptions(WriteIndented = true)]
-[JsonSerializable(typeof(JSON_Content))]
-internal partial class JSON_ContentContext : JsonSerializerContext {
+[JsonSerializable(typeof(JSON_Content_ContentBody))]
+internal partial class JSON_Content_ContentBodyContext : JsonSerializerContext {
 }

@@ -2,33 +2,31 @@
 
 namespace SF_Import_Builder.Models;
 
-public class JSON_Content {
+public class JSON_Content_SFDCMedia {
 
     /***********************************************************************************************************/
     /********************************************** PROPERTIES *************************************************/
     /***********************************************************************************************************/
 
-    public string type { get; set; }
+    public JSON_Content_Source source { get; set; }
 
-    public string title { get; set; }
-
-    public JSON_Content_ContentBody contentBody { get; set; }
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public string? url { get; set; }
 
     /***********************************************************************************************************/
     /*********************************************** CONSTRUCTOR ***********************************************/
     /***********************************************************************************************************/
 
-    public JSON_Content(string type, string title, JSON_Content_ContentBody contentBody) {
+    public JSON_Content_SFDCMedia(JSON_Content_Source source, string? url = null) {
 
-        this.type = "sfdc_cms__document";
-        this.title = title;
-        this.contentBody = contentBody;
+        this.source = source;
+        this.url = url;
 
     }
 
 }
 
 [JsonSourceGenerationOptions(WriteIndented = true)]
-[JsonSerializable(typeof(JSON_Content))]
-internal partial class JSON_ContentContext : JsonSerializerContext {
+[JsonSerializable(typeof(JSON_Content_SFDCMedia))]
+internal partial class JSON_Content_SFDCMediaContext : JsonSerializerContext {
 }
