@@ -11,6 +11,10 @@ public class FileOutputUtility {
 
     public string RootFolder { get; set; }
 
+    public StreamWriter SW { get; set; } = new("");
+
+    private bool IsOpen => this.SW != null && this.SW.BaseStream != null;
+
     public FileOutputUtility(string rootFolder) {
 
         this.RootFolder = rootFolder;
@@ -32,10 +36,39 @@ public class FileOutputUtility {
 
         }
 
-        StreamWriter sw = new(Path.Combine(this.RootFolder, filePathWithinRoot), false);
-        sw.Write(fileContents);
-        sw.Close();
+        this.CreateEmptyFile(filePathWithinRoot);
+        this.WriteToFile(fileContents);
+        this.CloseFile();
 
+
+    }
+
+    public void CreateEmptyFile(string filePathWithinRoot) {
+
+        if (this.IsOpen) {
+            this.SW.Close();
+        }
+        this.SW = new(Path.Combine(this.RootFolder, filePathWithinRoot), false);
+
+    }
+
+    public void WriteToFile(string fileContents) {
+
+        if (this.IsOpen) {
+            this.SW.Write(fileContents);
+        }
+
+    }
+
+    public void WriteLineBreakToFile() {
+
+        this.WriteToFile(this.SW.NewLine);
+
+    }
+
+    public void CloseFile() {
+
+        this.SW.Close();
 
     }
 
