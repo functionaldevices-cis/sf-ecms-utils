@@ -9,7 +9,7 @@ public class CMSFile {
 
     public string File_Path { get; init; }
 
-    public string Content_Title { get; init; }
+    public string Content_Title { get; set; }
 
     public string Content_MimeType { get; init; }
 

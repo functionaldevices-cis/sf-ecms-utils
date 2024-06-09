@@ -1,6 +1,7 @@
 ﻿using SF_Import_Builder.Helpers;
 using SF_Import_Builder.Models;
 using System.IO.Compression;
+using System.Linq;
 using System.Text.Json;
 
 namespace SF_Import_Builder; 
@@ -9,6 +10,8 @@ public class SFImportBuilder {
     private Config Config { get; set; }
 
     private FileOutputUtility FileOutputUtility { get; set; }
+
+    private List<CMSTitleOverride> TitleOverrides { get; set; } = new();
 
     public SFImportBuilder(Config config) {
 
@@ -26,6 +29,10 @@ public class SFImportBuilder {
                 throw new Exception("Error, the source folder that is specified in the config file doesn't seem to exist.");
 
             }
+
+            // CHECK TO SEE IF THERE IS A TITLES OVERRIDE FILE IN THE ROOT FOLDER
+
+            this.TitleOverrides = this.LoadCMSTitleOverrides(this.Config.SourceFolderPath);
 
             // SCAN THE DIRECTORY AND BUILD A LIST OF WHAT FOLDERS AND FILES NEED TO BE PROCESSED
 
@@ -60,6 +67,28 @@ public class SFImportBuilder {
 
     }
 
+    private List<CMSTitleOverride> LoadCMSTitleOverrides(string directoryPath) {
+
+        List<CMSTitleOverride> titleOverrides = new();
+
+        string titlesFilePath = Path.Combine(directoryPath, "sfc_titles.csv");
+
+        if (File.Exists(titlesFilePath)) {
+
+            titleOverrides = CSVUtility.UnSerialize(File.ReadAllLines(titlesFilePath)).Select(
+                line => new CMSTitleOverride(
+                    cmsPath: line.ContainsKey("CMS Path") ? line["CMS Path"] : "",
+                    fileName: line.ContainsKey("File Name") ? line["File Name"] : "",
+                    cmsTitle: line.ContainsKey("CMS Title") ? line["CMS Title"] : ""
+                )
+            ).ToList();
+
+        }
+
+        return titleOverrides;
+
+    }
+
     private CMSDirectory ScanDirectory(string directoryPath, string rootPath) {
 
         CMSDirectory directory = new(
@@ -77,16 +106,31 @@ public class SFImportBuilder {
 
         // SCAN ALL FILES
 
+        string? defaultCMSTitleForDirectory = null;
+        List<CMSTitleOverride> cmsTitlesForDirectory = this.TitleOverrides.Where(overRide => overRide.CMSPath == directory.PathWithinRoot).ToList();
+        List<CMSTitleOverride> matchingCMSTitles = cmsTitlesForDirectory.Where(overRide => overRide.FileName == "*").ToList();
+        if (matchingCMSTitles.Count > 0) {
+            defaultCMSTitleForDirectory = matchingCMSTitles[0].CMSTitle;
+        }
+
         filePaths.ForEach(filePath => {
 
-            if (File.Exists(filePath)) {
+            if (filePath != Path.Combine(directoryPath, "sfc_titles.csv")) {
 
-                directory.Files.Add(
-                    this.ScanFile(
-                        filePath: filePath,
-                        rootPath: rootPath
-                    )
-                 );
+                CMSFile file = this.ScanFile(
+                    filePath: filePath,
+                    cmsPath: directory.PathWithinRoot
+                );
+
+                matchingCMSTitles = cmsTitlesForDirectory.Where(overRide => overRide.FileName == file.File_Name).ToList();
+
+                if (matchingCMSTitles.Count > 0) {
+                    file.Content_Title = matchingCMSTitles[0].CMSTitle;
+                } else if (defaultCMSTitleForDirectory != null) {
+                    file.Content_Title = defaultCMSTitleForDirectory;
+                }
+
+                directory.Files.Add(file);
 
             }
 
@@ -96,16 +140,12 @@ public class SFImportBuilder {
 
         subDirectoryPaths.ForEach(subDirectoryPath => {
 
-            if (Directory.Exists(subDirectoryPath)) {
-
-                directory.SubDirectories.Add(
-                    this.ScanDirectory(
-                        directoryPath: subDirectoryPath,
-                        rootPath: rootPath
-                    )
-                );
-
-            }
+            directory.SubDirectories.Add(
+                this.ScanDirectory(
+                    directoryPath: subDirectoryPath,
+                    rootPath: rootPath
+                )
+            );
 
         });
 
@@ -113,13 +153,13 @@ public class SFImportBuilder {
 
     }
 
-    private CMSFile ScanFile(string filePath, string rootPath) {
+    private CMSFile ScanFile(string filePath, string cmsPath, string? cmsTitle = null) {
 
         CMSFile file = new(
             file_Name: Path.GetFileName(filePath),
-            content_Title: Path.GetFileNameWithoutExtension(filePath),
+            content_Title: cmsTitle ?? Path.GetFileNameWithoutExtension(filePath),
             file_Path: filePath,
-            meta_Path: filePath.Replace(rootPath, "").Replace(Path.GetFileName(filePath), "").Trim('\\'),
+            meta_Path: cmsPath,
             content_MimeType: this.ConvertExtensionToMimeType(Path.GetExtension(filePath))
         );
 
