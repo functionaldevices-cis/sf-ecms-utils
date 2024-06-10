@@ -19,7 +19,7 @@ internal class Program {
 
         // RUN IMPORT BUILDER
 
-        new SFImportBuilder(config);
+        new SFECMSUtils(config);
 
     }
 
