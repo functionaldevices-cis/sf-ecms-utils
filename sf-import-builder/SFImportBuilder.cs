@@ -1,5 +1,6 @@
 ﻿using SF_Import_Builder.Helpers;
 using SF_Import_Builder.Models;
+using System.IO;
 using System.IO.Compression;
 using System.Linq;
 using System.Text.Json;
@@ -36,9 +37,10 @@ public class SFImportBuilder {
 
             // SCAN THE DIRECTORY AND BUILD A LIST OF WHAT FOLDERS AND FILES NEED TO BE PROCESSED
 
-            CMSDirectory directory = this.ScanUnformattedDirectory(
+            CMSDirectory directory = this.ScanDirectory(
                 directoryPath: this.Config.SourceFolderPath,
-                rootPath: this.Config.SourceFolderPath
+                rootPath: this.Config.SourceFolderPath,
+                isFormatted: false
             );
 
             // PROCESS THE DIRECTORY
@@ -89,7 +91,7 @@ public class SFImportBuilder {
 
     }
 
-    private CMSDirectory ScanUnformattedDirectory(string directoryPath, string rootPath) {
+    private CMSDirectory ScanDirectory(string directoryPath, string rootPath, bool isFormatted) {
 
         CMSDirectory directory = new(
             name: Path.GetFileName(directoryPath) ?? "",
@@ -97,44 +99,44 @@ public class SFImportBuilder {
             pathWithinRoot: directoryPath.Replace(rootPath, "").Trim('\\')
         );
 
+        List<string> subDirectoryPaths;
+        List<string> filePaths;
+        CMSTitleOverridesForDirectory titleOverrides = new();
+        CMSFile? file;
+
         // LOAD A LIST OF ALL SUBFOLDERS AND FILES
 
-        Console.WriteLine($"Scanning folder '{Path.Combine(Path.GetFileName(rootPath), directory.PathWithinRoot)}'.");
+        if (isFormatted) {
 
-        List<string> subDirectoryPaths = Directory.GetDirectories(directory.FullPath).ToList();
-        List<string> filePaths = Directory.GetFiles(directory.FullPath, "*.*", SearchOption.TopDirectoryOnly).ToList();
+            subDirectoryPaths = Directory.GetDirectories(directory.FullPath).Where(subDirectoryPath => !this.IsDirectoryACMSFile(subDirectoryPath)).ToList();
+            filePaths = Directory.GetDirectories(directory.FullPath).Where(subDirectoryPath => this.IsDirectoryACMSFile(subDirectoryPath)).ToList();
+
+        } else {
+
+            subDirectoryPaths = Directory.GetDirectories(directory.FullPath).ToList();
+            filePaths = Directory.GetFiles(directory.FullPath, "*.*", SearchOption.TopDirectoryOnly).ToList();
+            titleOverrides = this.GetCMSTitleOverridesForCurrentDirectory(directory);
+
+        }
 
         // SCAN ALL FILES
 
-        string? defaultCMSTitleForDirectory = null;
-        List<CMSTitleOverride> cmsTitlesForDirectory = this.TitleOverrides.Where(overRide => overRide.CMSPath == directory.PathWithinRoot).ToList();
-        List<CMSTitleOverride> matchingCMSTitles = cmsTitlesForDirectory.Where(overRide => overRide.FileName == "*").ToList();
-        if (matchingCMSTitles.Count > 0) {
-            defaultCMSTitleForDirectory = matchingCMSTitles[0].CMSTitle;
-        }
-
         filePaths.ForEach(filePath => {
 
-            if (filePath != Path.Combine(directoryPath, "sfc_titles.csv")) {
-
-                CMSFile file = new(
-                    file_Name: Path.GetFileName(filePath),
-                    content_Title: Path.GetFileNameWithoutExtension(filePath),
-                    file_Path: filePath,
-                    meta_Path: directory.PathWithinRoot,
-                    content_MimeType: this.ConvertExtensionToMimeType(Path.GetExtension(filePath))
+            if (isFormatted) {
+                file = ScanPackagedFileDirectoryPath(
+                    filePath: filePath
                 );
+            } else {
+                file = ScanRawFilePath(
+                    filePath: filePath,
+                    pathWithinRoot: directory.PathWithinRoot,
+                    titleOverrides: titleOverrides
+                );
+            }
 
-                matchingCMSTitles = cmsTitlesForDirectory.Where(overRide => overRide.FileName == file.File_Name).ToList();
-
-                if (matchingCMSTitles.Count > 0) {
-                    file.Content_Title = matchingCMSTitles[0].CMSTitle;
-                } else if (defaultCMSTitleForDirectory != null) {
-                    file.Content_Title = defaultCMSTitleForDirectory;
-                }
-
+            if (file != null) {
                 directory.Files.Add(file);
-
             }
 
         });
@@ -144,15 +146,70 @@ public class SFImportBuilder {
         subDirectoryPaths.ForEach(subDirectoryPath => {
 
             directory.SubDirectories.Add(
-                this.ScanUnformattedDirectory(
+                this.ScanDirectory(
                     directoryPath: subDirectoryPath,
-                    rootPath: rootPath
+                    rootPath: rootPath,
+                    isFormatted: isFormatted
                 )
             );
 
         });
 
         return directory;
+
+    }
+
+    private CMSFile? ScanRawFilePath(string filePath, string pathWithinRoot, CMSTitleOverridesForDirectory titleOverrides) {
+
+        CMSFile file = new(
+            file_Name: Path.GetFileName(filePath),
+            content_Title: Path.GetFileNameWithoutExtension(filePath),
+            file_Path: filePath,
+            meta_Path: pathWithinRoot,
+            content_MimeType: this.ConvertExtensionToMimeType(Path.GetExtension(filePath))
+        );
+
+        string? titleOveride = titleOverrides.GetOverrideForFile(file.File_Name);
+        if (titleOveride != null) {
+            file.Content_Title = titleOveride;
+        }
+
+        return file;
+
+    }
+
+    private CMSFile? ScanPackagedFileDirectoryPath(string filePath) {
+
+        List<string> mediaPaths = Directory.GetFiles(Path.Combine(filePath, "_media")).ToList();
+
+        if (mediaPaths.Count > 0) {
+
+            string mediaPath = mediaPaths[0];
+            string contentJSONPath = Path.Combine(filePath, "content.json");
+            string metaJSONPath = Path.Combine(filePath, "_meta.json");
+
+            if (File.Exists(contentJSONPath) && File.Exists(metaJSONPath)) {
+
+                string contentJSONFileContent = File.ReadAllText(contentJSONPath);
+                JSON_Content contentJSON = JsonSerializer.Deserialize(contentJSONFileContent, JSON_ContentContext.Default.JSON_Content) ?? throw new Exception("Error, unable to parse a content file.");
+
+                string metaJSONFileContent = File.ReadAllText(metaJSONPath);
+                JSON_Meta metaJSON = JsonSerializer.Deserialize(metaJSONFileContent, JSON_MetaContext.Default.JSON_Meta) ?? throw new Exception("Error, unable to parse a meta file.");
+
+                return new CMSFile(
+                    file_Name: Path.GetFileName(mediaPath),
+                    file_Path: mediaPath,
+                    content_Title: contentJSON.title,
+                    content_MimeType: contentJSON.contentBody.sfdc_cms_media.source.mimeType,
+                    meta_Path: metaJSON.path,
+                    meta_ContentKey: metaJSON.contentKey
+                );
+
+            }
+
+        }
+
+        return null;
 
     }
 
@@ -199,6 +256,22 @@ public class SFImportBuilder {
         this.FileOutputUtility.CreateFile(
             filePathWithinRoot: Path.Combine(outputFileWrapperFolderPath, "_meta.json"),
             fileContents: JsonSerializer.Serialize(file.Meta_JSON, JSON_MetaContext.Default.JSON_Meta)
+        );
+
+    }
+
+    private CMSTitleOverridesForDirectory GetCMSTitleOverridesForCurrentDirectory(CMSDirectory directory) {
+
+        CMSTitleOverride? defaultCMSTitleForDirectory = null;
+        List<CMSTitleOverride> cmsTitlesForDirectory = this.TitleOverrides.Where(overRide => overRide.CMSPath == directory.PathWithinRoot).ToList();
+        List<CMSTitleOverride> matchingCMSTitles = cmsTitlesForDirectory.Where(overRide => overRide.FileName == "*").ToList();
+        if (matchingCMSTitles.Count > 0) {
+            defaultCMSTitleForDirectory = matchingCMSTitles[0];
+        }
+
+        return new(
+            defaultOverride: defaultCMSTitleForDirectory,
+            perFileOverrides: cmsTitlesForDirectory
         );
 
     }
