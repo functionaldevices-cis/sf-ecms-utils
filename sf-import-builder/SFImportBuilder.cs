@@ -36,7 +36,7 @@ public class SFImportBuilder {
 
             // SCAN THE DIRECTORY AND BUILD A LIST OF WHAT FOLDERS AND FILES NEED TO BE PROCESSED
 
-            CMSDirectory directory = this.ScanDirectory(
+            CMSDirectory directory = this.ScanUnformattedDirectory(
                 directoryPath: this.Config.SourceFolderPath,
                 rootPath: this.Config.SourceFolderPath
             );
@@ -89,7 +89,7 @@ public class SFImportBuilder {
 
     }
 
-    private CMSDirectory ScanDirectory(string directoryPath, string rootPath) {
+    private CMSDirectory ScanUnformattedDirectory(string directoryPath, string rootPath) {
 
         CMSDirectory directory = new(
             name: Path.GetFileName(directoryPath) ?? "",
@@ -141,7 +141,7 @@ public class SFImportBuilder {
         subDirectoryPaths.ForEach(subDirectoryPath => {
 
             directory.SubDirectories.Add(
-                this.ScanDirectory(
+                this.ScanUnformattedDirectory(
                     directoryPath: subDirectoryPath,
                     rootPath: rootPath
                 )
@@ -172,13 +172,7 @@ public class SFImportBuilder {
         // PROCESS THE FILES THAT ARE DIRECTLY IN THIS DIRECTORY
 
         for (int i = 0; i < directory.Files.Count; i++) {
-
-            Console.Clear();
-            Console.WriteLine($"Processing files directly in '{directory.FullPath}'.");
-            Console.WriteLine($"Processing file {i+1} out of {directory.Files.Count} total.");
-
             this.ProcessFile(directory.Files[i]);
-
         }
 
         // LOOP THROUGH THE SUBDIRECTORIES AND PROCESS EACH ONE
