@@ -11,7 +11,7 @@ public class FileOutputUtility {
 
     public string RootFolder { get; set; }
 
-    public StreamWriter SW { get; set; } = new("");
+    public StreamWriter SW { get; set; }
 
     private bool IsOpen => this.SW != null && this.SW.BaseStream != null;
 
