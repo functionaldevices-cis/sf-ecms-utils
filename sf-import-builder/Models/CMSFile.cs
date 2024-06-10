@@ -1,4 +1,4 @@
-﻿namespace SF_Import_Builder.Models;
+﻿namespace SF_ECMS_Utils.Models;
 public class CMSFile {
 
     /***********************************************************************************************************/

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SF_Import_Builder.Helpers; 
+namespace SF_ECMS_Utils.Helpers; 
 
 public class FileOutputUtility {
 

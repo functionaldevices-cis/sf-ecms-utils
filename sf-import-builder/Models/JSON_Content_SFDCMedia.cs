@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace SF_Import_Builder.Models;
+namespace SF_ECMS_Utils.Models;
 
 public class JSON_Content_SFDCMedia {
 

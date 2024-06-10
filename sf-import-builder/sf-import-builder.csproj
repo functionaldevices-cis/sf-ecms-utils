@@ -3,15 +3,15 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net8.0</TargetFramework>
-    <RootNamespace>SF_Import_Builder</RootNamespace>
+    <RootNamespace>SF_ECMS_Utils</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <Company>Functional Devices, Inc.</Company>
     <Version>2.0.0</Version>
     <Authors>Kelderic</Authors>
     <Description>A .NET console program to automatically create Salesforce Enhanced CMS import ZIP packages.</Description>
-    <PackageProjectUrl>https://github.com/functionaldevices-cis/sf-import-builder</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/functionaldevices-cis/sf-import-builder</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/functionaldevices-cis/sf-ecms-utils</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/functionaldevices-cis/sf-ecms-utils</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <PackageTags>dotnet;salesforce;salesforce-cms</PackageTags>
     <PublishAot>False</PublishAot>
@@ -32,7 +32,7 @@
       <Pack>True</Pack>
       <PackagePath>\</PackagePath>
     </None>
-    <None Update="sf-import-builder-config.json">
+    <None Update="sf-ecms-utils-config.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

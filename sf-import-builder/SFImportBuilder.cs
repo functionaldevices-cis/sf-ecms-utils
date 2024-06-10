@@ -1,5 +1,5 @@
-﻿using SF_Import_Builder.Helpers;
-using SF_Import_Builder.Models;
+﻿using SF_ECMS_Utils.Helpers;
+using SF_ECMS_Utils.Models;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
@@ -7,7 +7,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Text.Json;
 
-namespace SF_Import_Builder; 
+namespace SF_ECMS_Utils; 
 public class SFImportBuilder {
 
     private Config Config { get; set; }

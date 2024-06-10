@@ -6,7 +6,7 @@ The JSON files are created based on the specification provided by Salesforce her
 
 # Configuration
 
-You configure the program by filling in the `sf-import-builder-config.json` file that comes with the program.
+You configure the program by filling in the `sf-ecms-utils-config.json` file that comes with the program.
 
 * `SourceFilterPath`
   * **Required**: `True`
@@ -29,4 +29,4 @@ You configure the program by filling in the `sf-import-builder-config.json` file
 
 # Examples
 
-See here for example: https://github.com/functionaldevices-cis/sf-import-builder/tree/main/Examples
+See here for example: https://github.com/functionaldevices-cis/sf-ecms-utils/tree/main/Examples

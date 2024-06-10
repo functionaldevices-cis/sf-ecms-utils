@@ -1,8 +1,8 @@
-﻿using SF_Import_Builder.Models;
+﻿using SF_ECMS_Utils.Models;
 using System.Diagnostics;
 using System.Text.Json;
 
-namespace SF_Import_Builder;
+namespace SF_ECMS_Utils;
 
 internal class Program {
 
@@ -10,7 +10,7 @@ internal class Program {
 
         // ATTEMPT TO LOAD DATA
 
-        string configFilePath = Path.Combine(Path.GetDirectoryName(Process.GetCurrentProcess().MainModule?.FileName) ?? "", "sf-import-builder-config.json");
+        string configFilePath = Path.Combine(Path.GetDirectoryName(Process.GetCurrentProcess().MainModule?.FileName) ?? "", "sf-ecms-utils-config.json");
         string configFileContent = File.ReadAllText(configFilePath);
 
         // PARSE DATA

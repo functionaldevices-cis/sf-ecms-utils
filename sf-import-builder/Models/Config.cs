@@ -6,7 +6,7 @@ using System.Text;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
-namespace SF_Import_Builder.Models;
+namespace SF_ECMS_Utils.Models;
 public class Config {
 
     /***********************************************************************************************************/
