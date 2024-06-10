@@ -12,21 +12,23 @@ public class Config {
     /********************************************** PROPERTIES *************************************************/
     /***********************************************************************************************************/
 
+    public string Action { get; set; }
     public string SourceFolderPath { get; set; }
-    public string OutputFolderPath { get; set; }
-    public bool CreateZipPackage { get; set; }
-    public bool DeleteOutputFolder { get; set; }
+    public string PackagedFolderPath { get; set; }
+    public bool CreateZipFile { get; set; }
+    public bool DeleteUnzippedPackagedFiles { get; set; }
 
     /***********************************************************************************************************/
     /*********************************************** CONSTRUCTOR ***********************************************/
     /***********************************************************************************************************/
 
-    public Config(string SourceFolderPath, string? OutputFolderPath = null, bool CreateZipPackage = false, bool DeleteOutputFolder = false) {
+    public Config(string Action, string SourceFolderPath, string PackagedFolderPath, bool CreateZipFile = false, bool DeleteUnzippedPackagedFiles = false) {
         
+        this.Action = Action == "PackageFiles" ? "PackageFiles" : "AnalyzeFiles";
         this.SourceFolderPath = SourceFolderPath;
-        this.OutputFolderPath = OutputFolderPath ?? SourceFolderPath;
-        this.CreateZipPackage = CreateZipPackage;
-        this.DeleteOutputFolder = DeleteOutputFolder;
+        this.PackagedFolderPath = PackagedFolderPath;
+        this.CreateZipFile = CreateZipFile;
+        this.DeleteUnzippedPackagedFiles = DeleteUnzippedPackagedFiles;
 
     }
 
