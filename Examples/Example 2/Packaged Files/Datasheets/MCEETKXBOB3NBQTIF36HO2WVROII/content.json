@@ -1,0 +1,15 @@
+{
+  "type" : "sfdc_cms__document",
+  "title" : "RIBU1C",
+  "contentBody" : {
+    "sfdc_cms:media" : {
+      "source" : {
+        "type" : "file",
+        "mimeType" : "application/pdf",
+        "ref" : "0sNVE00000072WY",
+        "size" : 375916
+      },
+      "url" : "/cms/media/MCEETKXBOB3NBQTIF36HO2WVROII?version=1.1"
+    }
+  }
+}

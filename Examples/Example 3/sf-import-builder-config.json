@@ -1,0 +1,5 @@
+{
+    "Action": "PackageFiles",
+    "SourceFiles_FolderPath": "C:\\Users\\UserName\\Desktop\\Example 3\\Source",
+    "PackagedFiles_FolderPath": "C:\\Users\\UserName\\Desktop\\Example 3\\Staging Folder"
+}
