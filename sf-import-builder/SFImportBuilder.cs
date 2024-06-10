@@ -1,8 +1,10 @@
 ﻿using SF_Import_Builder.Helpers;
 using SF_Import_Builder.Models;
+using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text.Json;
 
 namespace SF_Import_Builder; 
@@ -19,42 +21,65 @@ public class SFImportBuilder {
         // PARSE DATA
 
         this.Config = config;
-        this.FileOutputUtility = new(this.Config.PackagedFolderPath);
+        this.FileOutputUtility = new(this.Config.PackagedFiles_FolderPath);
 
         try {
 
-            // VALIDATE DATA
+            if (Config.Action == "PackageFiles") {      
 
-            if (!Directory.Exists(this.Config.SourceFolderPath)) {
+                // CHECK TO SEE IF THERE IS A TITLES OVERRIDE FILE IN THE ROOT FOLDER
 
-                throw new Exception("Error, the source folder that is specified in the config file doesn't seem to exist.");
+                this.TitleOverrides = this.LoadCMSTitleOverrides(this.Config.SourceFiles_FolderPath);
 
-            }
+                // SCAN THE DIRECTORY AND BUILD A LIST OF WHAT FOLDERS AND FILES NEED TO BE PROCESSED
 
-            // CHECK TO SEE IF THERE IS A TITLES OVERRIDE FILE IN THE ROOT FOLDER
+                CMSDirectory directory = this.ScanDirectory(
+                    directoryPath: this.Config.SourceFiles_FolderPath,
+                    rootPath: this.Config.SourceFiles_FolderPath,
+                    isFormatted: false
+                );
 
-            this.TitleOverrides = this.LoadCMSTitleOverrides(this.Config.SourceFolderPath);
+                // PROCESS THE DIRECTORY
 
-            // SCAN THE DIRECTORY AND BUILD A LIST OF WHAT FOLDERS AND FILES NEED TO BE PROCESSED
+                this.PackageFiles(directory.GetAllFiles());
+                this.CreateSummary(directory.GetAllFiles());
 
-            CMSDirectory directory = this.ScanDirectory(
-                directoryPath: this.Config.SourceFolderPath,
-                rootPath: this.Config.SourceFolderPath,
-                isFormatted: false
-            );
+                // CREATE ZIP FILE
 
-            List<CMSFile> file = directory.GetAllFiles();
+                if (this.Config.CreateZipFile) {
 
-            // PROCESS THE DIRECTORY
+                    ZipFile.CreateFromDirectory(Path.Combine(this.Config.PackagedFiles_FolderPath, "Packaged Files"), Path.Combine(this.Config.PackagedFiles_FolderPath, "Packaged File.zip"));
 
-            this.PackageFiles(directory.GetAllFiles());
-            this.CreateSummary(directory.GetAllFiles());
+                }
 
-            // CREATE ZIP FILE
+            } else {
 
-            if (this.Config.CreateZipFile) {
+                // UNZIP IF SPECIFIED
 
-                ZipFile.CreateFromDirectory(Path.Combine(this.Config.PackagedFolderPath, "Packaged Files"), Path.Combine(this.Config.PackagedFolderPath, "Packaged File.zip"));
+                if (this.Config.PackagedFiles_ZipFilePath != null) {
+
+                    ZipFile.ExtractToDirectory(this.Config.PackagedFiles_ZipFilePath, Path.Combine(this.Config.PackagedFiles_FolderPath, "Packaged Files"));
+
+                }
+
+                // MOVE ALL FILES INTO A NESTED "Packaged Files" FOLDER IF NOT ALREADY DONE
+
+                List<string> subDirectoryPaths = Directory.GetDirectories(this.Config.PackagedFiles_FolderPath).ToList();
+                if (subDirectoryPaths.Count == 0 || Path.GetFileName(subDirectoryPaths[0]) != "Packaged Files") {
+                    string oldPath = this.Config.PackagedFiles_FolderPath;
+                    string newPath = Path.Combine(this.Config.PackagedFiles_FolderPath, "Packaged Files");
+                    this.MoveAll(oldPath, newPath);
+                }
+
+                // ANALYZE
+
+                CMSDirectory directory = this.ScanDirectory(
+                    directoryPath: this.Config.PackagedFiles_FolderPath,
+                    rootPath: this.Config.PackagedFiles_FolderPath,
+                    isFormatted: true
+                );
+
+                this.CreateSummary(directory.GetAllFiles());
 
             }
 
@@ -216,7 +241,7 @@ public class SFImportBuilder {
 
             // CREATE PATHS
 
-            string outputFileWrapperFolderPath = Path.Combine(this.Config.PackagedFolderPath, "Packaged Files", file.Meta_Path, file.File_Name);
+            string outputFileWrapperFolderPath = Path.Combine(this.Config.PackagedFiles_FolderPath, "Packaged Files", file.Meta_Path, file.File_Name);
 
             // CREATE NEW FOLDERS
 
@@ -371,6 +396,37 @@ public class SFImportBuilder {
 
             return false;
         }
+
+    }
+
+    private void MoveAll(string oldPath, string newPath) {
+
+        List<string> subDirectoryPaths = Directory.GetDirectories(oldPath).ToList();
+        List<string> filePaths = Directory.GetFiles(oldPath, "*.*", SearchOption.TopDirectoryOnly).ToList();
+
+        if (!Directory.Exists(newPath)) {
+            Directory.CreateDirectory(newPath);
+        }
+
+        // MOVE ALL FILES
+
+        filePaths.ForEach(filePath => {
+
+            string fileName = Path.GetFileName(filePath);
+
+            File.Move(filePath, Path.Combine(newPath,filePath));
+
+        });
+
+        // MOVE ALL SUBFOLDERS
+
+        subDirectoryPaths.ForEach(subDirectoryPath => {
+
+            string folderName = Path.GetFileName(subDirectoryPath);
+
+            Directory.Move(subDirectoryPath, Path.Combine(newPath, folderName));
+
+        });
 
     }
 

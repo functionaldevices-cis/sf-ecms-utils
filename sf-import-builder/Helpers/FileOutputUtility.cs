@@ -38,12 +38,13 @@ public class FileOutputUtility {
 
             }
 
+            this.CreateEmptyFile(filePathWithinRoot);
+
             if (fileLines != null) {
                 fileContents = string.Join(this.SW.NewLine, fileLines);
             }
-
-            this.CreateEmptyFile(filePathWithinRoot);
             this.WriteToFile(fileContents ?? "");
+
             this.CloseFile();
 
         }

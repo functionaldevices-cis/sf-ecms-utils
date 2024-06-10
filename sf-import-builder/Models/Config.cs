@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.Json.Serialization;
@@ -13,20 +14,67 @@ public class Config {
     /***********************************************************************************************************/
 
     public string Action { get; set; }
-    public string SourceFolderPath { get; set; }
-    public string PackagedFolderPath { get; set; }
+    public string SourceFiles_FolderPath { get; set; }
+    public string? PackagedFiles_ZipFilePath { get; set; }
+    public string PackagedFiles_FolderPath { get; set; }
     public bool CreateZipFile { get; set; }
 
     /***********************************************************************************************************/
     /*********************************************** CONSTRUCTOR ***********************************************/
     /***********************************************************************************************************/
 
-    public Config(string Action, string SourceFolderPath, string PackagedFolderPath, bool CreateZipFile = false) {
-        
+    public Config(string Action, string? SourceFiles_FolderPath = null, string? PackagedFiles_ZipFilePath = null, string? PackagedFiles_FolderPath = null, bool CreateZipFile = false) {
+
         this.Action = Action == "PackageFiles" ? "PackageFiles" : "AnalyzeFiles";
-        this.SourceFolderPath = SourceFolderPath;
-        this.PackagedFolderPath = PackagedFolderPath;
+        this.SourceFiles_FolderPath = SourceFiles_FolderPath ?? "";
+        this.PackagedFiles_ZipFilePath = PackagedFiles_ZipFilePath;
+        this.PackagedFiles_FolderPath = PackagedFiles_FolderPath ?? "";
         this.CreateZipFile = CreateZipFile;
+
+        // VALIDATE THE CONFIG FILE
+
+        if (this.Action == "AnalyzeFiles") {
+
+            // IF WE HAVE A VALID ZIP FILE
+
+            if (PackagedFiles_ZipFilePath != null && File.Exists(PackagedFiles_ZipFilePath)) {
+
+                this.PackagedFiles_ZipFilePath = PackagedFiles_ZipFilePath;
+                this.PackagedFiles_FolderPath = Path.GetDirectoryName(this.PackagedFiles_ZipFilePath) ?? "";
+
+            } else if (PackagedFiles_FolderPath != null && Directory.Exists(PackagedFiles_FolderPath)) {
+
+                this.PackagedFiles_FolderPath = PackagedFiles_FolderPath;
+
+            } else {
+
+                throw new Exception("Error, when taking an action of 'AnalyzeFiles', the config needs to contain either a valid 'PackagedFiles_ZipFilePath' or 'PackagedFiles_FolderPath'.");
+
+            }
+
+        } else {
+
+            if (SourceFiles_FolderPath == null || PackagedFiles_FolderPath == null) {
+
+                throw new Exception("Error, when taking an action of 'PackageFiles', the config needs to contain both 'SourceFiles_FolderPath' and 'PackagedFiles_FolderPath'.");
+
+            } else {
+
+                if (!Directory.Exists(this.SourceFiles_FolderPath)) {
+
+                    throw new Exception("Error, the 'SourceFiles_FolderPath' file path is invalid.");
+
+                }
+
+                if (!Directory.Exists(this.PackagedFiles_FolderPath)) {
+
+                    throw new Exception("Error, the 'PackagedFiles_FolderPath' folder path is invalid.");
+
+                }
+
+            }
+
+        }
 
     }
 

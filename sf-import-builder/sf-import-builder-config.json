@@ -1,6 +1,5 @@
 {
-    "Action": "PackageFiles",
-    "SourceFolderPath": "C:\\Users\\AndyMercer\\OneDrive - Functional Devices, Inc\\Desktop\\Salesforce File Import\\Source",
-    "PackagedFolderPath": "C:\\Users\\AndyMercer\\OneDrive - Functional Devices, Inc\\Desktop\\Salesforce File Import\\Output",
+    "Action": "AnalyzeFiles",
+    "PackagedFiles_FolderPath": "",
     "CreateZipFile": false
 }
