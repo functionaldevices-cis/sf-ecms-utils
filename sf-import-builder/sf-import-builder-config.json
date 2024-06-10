@@ -1,5 +1,7 @@
 {
     "Action": "AnalyzeFiles",
+    "SourceFiles_FolderPath": "",
+    "PackagedFiles_ZipFilePath": "",
     "PackagedFiles_FolderPath": "",
     "CreateZipFile": false
 }
