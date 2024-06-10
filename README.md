@@ -27,48 +27,6 @@ You configure the program by filling in the `sf-import-builder-config.json` file
   * **Type**: Boolean
   * **Description**: Flag to control whether or not the program deletes the output folder after it finishes running. Useful if you only care about the final ZIP package.
 
-# Example
+# Examples
 
-Say I have a folder on my desktop
-
-`C:\Users\JohnDoe\Desktop\Files`
-
-The contents of this folder are:
-
-* Files
-  * Bulletins
-    * Installation Guides
-      * Car.pdf
-      * Truck.pdf
-      * Boat.pdf
-  * Catalogs
-    * 2024_Models.pdf
- 
-The program will scan all files in the above folder structure, and create the following:
-
-* Output
-  * Bulletins
-    * Installation Guides
-      * Car.pdf (a folder, not a file)
-        * _media
-          * Car.pdf
-        * Content.json
-        * _meta.json
-      * Truck.pdf (a folder, not a file)
-        * _media
-          * Truck.pdf
-        * Content.json
-        * _meta.json
-      * Boat.pdf (a folder, not a file)
-        * _media
-          * Boat.pdf
-        * Content.json
-        * _meta.json
-  * Catalogs
-    * 2024_Models.pdf (a folder, not a file)
-        * _media
-          * 2024_Models.pdf
-        * Content.json
-        * _meta.json
-     
- It may then put the contents of the output folder into a ZIP file, called `ImportPackage.zip`, depending on your configuration (default is `true`). It may then delete the contents of the output folder, depending on your congfiguration (default is `false`).
+See here for example: https://github.com/functionaldevices-cis/sf-import-builder/tree/main/Examples
