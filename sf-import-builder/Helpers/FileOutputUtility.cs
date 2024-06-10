@@ -21,24 +21,32 @@ public class FileOutputUtility {
 
     }
 
-    public void CreateFile(string filePathWithinRoot, string fileContents) {
+    public void CreateFile(string filePathWithinRoot, string? fileContents = null, List<string>? fileLines = null) {
 
-        if (filePathWithinRoot.Contains('\\')) {
+        if (fileContents != null || fileLines != null) {
 
-            string nestedFolderPath;
-            string[] fileNameParts;
+            if (filePathWithinRoot.Contains('\\')) {
 
-            fileNameParts = filePathWithinRoot.Split('\\');
-            fileNameParts = fileNameParts.Take(fileNameParts.Length - 1).ToArray();
-            nestedFolderPath = string.Join('\\', fileNameParts);
+                string nestedFolderPath;
+                string[] fileNameParts;
 
-            Directory.CreateDirectory(Path.Combine(this.RootFolder, nestedFolderPath));
+                fileNameParts = filePathWithinRoot.Split('\\');
+                fileNameParts = fileNameParts.Take(fileNameParts.Length - 1).ToArray();
+                nestedFolderPath = string.Join('\\', fileNameParts);
+
+                Directory.CreateDirectory(Path.Combine(this.RootFolder, nestedFolderPath));
+
+            }
+
+            if (fileLines != null) {
+                fileContents = string.Join(this.SW.NewLine, fileLines);
+            }
+
+            this.CreateEmptyFile(filePathWithinRoot);
+            this.WriteToFile(fileContents ?? "");
+            this.CloseFile();
 
         }
-
-        this.CreateEmptyFile(filePathWithinRoot);
-        this.WriteToFile(fileContents);
-        this.CloseFile();
 
 
     }

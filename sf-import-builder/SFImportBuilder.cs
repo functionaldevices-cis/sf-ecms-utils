@@ -80,7 +80,7 @@ public class SFImportBuilder {
 
         if (File.Exists(titlesFilePath)) {
 
-            titleOverrides = CSVUtility.UnSerialize(File.ReadAllLines(titlesFilePath)).Select(
+            titleOverrides = CSVUtility.UnSerialize(File.ReadAllLines(titlesFilePath).ToList()).Select(
                 line => new CMSTitleOverride(
                     cmsPath: line.ContainsKey("CMS Path") ? line["CMS Path"] : "",
                     fileName: line.ContainsKey("File Name") ? line["File Name"] : "",
@@ -253,37 +253,18 @@ public class SFImportBuilder {
 
     private void CreateSummary(List<CMSFile> files) {
 
-        bool haveWrittenCSVHeaders = false;
+        // CREATE A LIST OF TEXT LINES
 
-        this.FileOutputUtility.CreateEmptyFile("Files Summary.csv");
+        List<string> csvFileLines = CSVUtility.Serialize(
+            files.Select(file => file.AnalysisValues).ToList()
+        );
 
-        files.ForEach(file => {
+        // WRITE THE LINES TO A FILE
 
-            if (!haveWrittenCSVHeaders) {
-
-                this.FileOutputUtility.WriteToFile(
-                    string.Join(
-                        ",",
-                        file.AnalysisValues.Keys.Select(v => CSVUtility.EscapeString(v))
-                    )
-                );
-
-                haveWrittenCSVHeaders = true;
-
-            }
-
-            this.FileOutputUtility.WriteLineBreakToFile();
-
-            this.FileOutputUtility.WriteToFile(
-                string.Join(
-                    ",",
-                    file.AnalysisValues.Values.Select(v => CSVUtility.EscapeString(v))
-                )
-            );
-
-        });
-
-        this.FileOutputUtility.CloseFile();
+        this.FileOutputUtility.CreateFile(
+            filePathWithinRoot: "Files Summary.csv",
+            fileLines: csvFileLines
+        );
 
     }
 

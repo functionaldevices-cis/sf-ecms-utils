@@ -31,7 +31,7 @@ public static class CSVUtility {
 
     }
 
-    public static List<Dictionary<string, string>> UnSerialize(string[] csvFileContents) {
+    public static List<Dictionary<string, string>> UnSerialize(List<string> csvFileContents) {
 
         List<List<string>> lines = csvFileContents.Select(
             line => line.Split(',').Select(value => CSVUtility.UnEscapeString(value)).ToList()
@@ -49,6 +49,39 @@ public static class CSVUtility {
         linesAsDictionaries.RemoveAt(0);
 
         return linesAsDictionaries;
+
+    }
+
+    public static List<string> Serialize(List<Dictionary<string, string>> linesAsDictionaries) {
+
+        bool haveWrittenCSVHeaders = false;
+        List<string> csvFileContents = [];
+
+        linesAsDictionaries.ForEach(linesAsDictionary => {
+
+            if (!haveWrittenCSVHeaders) {
+
+                csvFileContents.Add(
+                    string.Join(
+                        ",",
+                        linesAsDictionary.Keys.Select(v => CSVUtility.EscapeString(v))
+                    )
+                );
+
+                haveWrittenCSVHeaders = true;
+
+            }
+
+            csvFileContents.Add(
+                string.Join(
+                    ",",
+                    linesAsDictionary.Values.Select(v => CSVUtility.EscapeString(v))
+                )
+            );
+
+        });
+
+        return csvFileContents;
 
     }
 
