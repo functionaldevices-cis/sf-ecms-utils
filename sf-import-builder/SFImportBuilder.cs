@@ -45,7 +45,7 @@ public class SFImportBuilder {
 
             // PROCESS THE DIRECTORY
 
-            this.ProcessDirectory(directory);
+            this.PackageDirectory(directory);
 
             // CREATE ZIP FILE
 
@@ -213,23 +213,23 @@ public class SFImportBuilder {
 
     }
 
-    private void ProcessDirectory(CMSDirectory directory) {
+    private void PackageDirectory(CMSDirectory directory) {
 
         // PROCESS THE FILES THAT ARE DIRECTLY IN THIS DIRECTORY
 
         for (int i = 0; i < directory.Files.Count; i++) {
-            this.ProcessFile(directory.Files[i]);
+            this.PackageFile(directory.Files[i]);
         }
 
         // LOOP THROUGH THE SUBDIRECTORIES AND PROCESS EACH ONE
 
         directory.SubDirectories.ForEach(subDirectory => {
-            this.ProcessDirectory(subDirectory);
+            this.PackageDirectory(subDirectory);
         });
 
     }
 
-    private void ProcessFile(CMSFile file) {
+    private void PackageFile(CMSFile file) {
 
         // CREATE PATHS
 
