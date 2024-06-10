@@ -16,19 +16,17 @@ public class Config {
     public string SourceFolderPath { get; set; }
     public string PackagedFolderPath { get; set; }
     public bool CreateZipFile { get; set; }
-    public bool DeleteUnzippedPackagedFiles { get; set; }
 
     /***********************************************************************************************************/
     /*********************************************** CONSTRUCTOR ***********************************************/
     /***********************************************************************************************************/
 
-    public Config(string Action, string SourceFolderPath, string PackagedFolderPath, bool CreateZipFile = false, bool DeleteUnzippedPackagedFiles = false) {
+    public Config(string Action, string SourceFolderPath, string PackagedFolderPath, bool CreateZipFile = false) {
         
         this.Action = Action == "PackageFiles" ? "PackageFiles" : "AnalyzeFiles";
         this.SourceFolderPath = SourceFolderPath;
         this.PackagedFolderPath = PackagedFolderPath;
         this.CreateZipFile = CreateZipFile;
-        this.DeleteUnzippedPackagedFiles = DeleteUnzippedPackagedFiles;
 
     }
 

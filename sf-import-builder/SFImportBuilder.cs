@@ -58,12 +58,6 @@ public class SFImportBuilder {
 
             }
 
-            if (this.Config.DeleteUnzippedPackagedFiles) {
-
-                Directory.Delete(Path.Combine(this.Config.PackagedFolderPath, "Packaged Files"), true);
-
-            }
-
         } catch (Exception ex) {
 
             Console.WriteLine(ex.ToString());
