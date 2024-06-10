@@ -54,13 +54,13 @@ public class SFImportBuilder {
 
             if (this.Config.CreateZipPackage) {
 
-                ZipFile.CreateFromDirectory(Path.Combine(this.Config.OutputFolderPath, "ImportPackage"), Path.Combine(this.Config.OutputFolderPath, "ImportPackage.zip"));
+                ZipFile.CreateFromDirectory(Path.Combine(this.Config.OutputFolderPath, "Packaged Files"), Path.Combine(this.Config.OutputFolderPath, "Packaged File.zip"));
 
             }
 
             if (this.Config.DeleteOutputFolder) {
 
-                Directory.Delete(Path.Combine(this.Config.OutputFolderPath, "ImportPackage"), true);
+                Directory.Delete(Path.Combine(this.Config.OutputFolderPath, "Packaged Files"), true);
 
             }
 
@@ -222,7 +222,7 @@ public class SFImportBuilder {
 
             // CREATE PATHS
 
-            string outputFileWrapperFolderPath = Path.Combine(this.Config.OutputFolderPath, "ImportPackage", file.Meta_Path, file.File_Name);
+            string outputFileWrapperFolderPath = Path.Combine(this.Config.OutputFolderPath, "Packaged Files", file.Meta_Path, file.File_Name);
 
             // CREATE NEW FOLDERS
 
