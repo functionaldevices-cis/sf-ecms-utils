@@ -114,7 +114,7 @@ public class SFImportBuilder {
         } else {
 
             subDirectoryPaths = Directory.GetDirectories(directory.FullPath).ToList();
-            filePaths = Directory.GetFiles(directory.FullPath, "*.*", SearchOption.TopDirectoryOnly).ToList();
+            filePaths = Directory.GetFiles(directory.FullPath, "*.*", SearchOption.TopDirectoryOnly).ToList().Where(filePaths => Path.GetFileName(filePaths) != "sfc_titles.csv").ToList();
             titleOverrides = this.GetCMSTitleOverridesForCurrentDirectory(directory);
 
         }
