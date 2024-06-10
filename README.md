@@ -37,4 +37,11 @@ You configure the program by filling in the `sf-ecms-utils-config.json` file tha
 
 # Examples
 
-See here for example: https://github.com/functionaldevices-cis/sf-ecms-utils/tree/main/Examples
+Example 1 - Unzip and Analyze an Exported Zip File
+See here for example: https://github.com/functionaldevices-cis/sf-ecms-utils/tree/main/Examples/Example 1
+
+Example 2 - Analyze an Already Unzipped Export
+See here for example: https://github.com/functionaldevices-cis/sf-ecms-utils/tree/main/Examples/Example 2
+
+Example 3 - Package a set of Files for Import
+See here for example: https://github.com/functionaldevices-cis/sf-ecms-utils/tree/main/Examples/Example 3
