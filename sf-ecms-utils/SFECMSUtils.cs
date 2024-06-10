@@ -8,7 +8,7 @@ using System.Runtime.Serialization;
 using System.Text.Json;
 
 namespace SF_ECMS_Utils; 
-public class SFImportBuilder {
+public class SFECMSUtils {
 
     private Config Config { get; set; }
 
@@ -16,7 +16,7 @@ public class SFImportBuilder {
 
     private List<CMSTitleOverride> TitleOverrides { get; set; } = new();
 
-    public SFImportBuilder(Config config) {
+    public SFECMSUtils(Config config) {
 
         // PARSE DATA
 
