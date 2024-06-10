@@ -17,6 +17,14 @@ public class CMSFile {
 
     public string Meta_Path { get; init; }
 
+    public Dictionary<string, string> AnalysisValues => new() {
+        { "CMS Content Key", this.Meta_ContentKey ?? "" },
+        { "CMS Title", this.Content_Title },
+        { "CMS Folder Path", this.Meta_Path },
+        { "File Name", this.File_Name },
+        { "MimeType", this.Content_MimeType }
+    };
+
     public JSON_Content Content_JSON => new(
         type: "sfdc_cms__document",
         title: this.Content_Title,
@@ -32,7 +40,7 @@ public class CMSFile {
 
     public JSON_Meta Meta_JSON => new(
         contentKey: this.Meta_ContentKey,
-        path : this.Meta_Path
+        path : this.Meta_Path.Replace('\\', '/')
     );
 
     /***********************************************************************************************************/

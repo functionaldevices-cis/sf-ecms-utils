@@ -43,9 +43,12 @@ public class SFImportBuilder {
                 isFormatted: false
             );
 
+            List<CMSFile> file = directory.GetAllFiles();
+
             // PROCESS THE DIRECTORY
 
-            this.PackageDirectory(directory);
+            this.PackageFiles(directory.GetAllFiles());
+            this.CreateSummary(directory.GetAllFiles());
 
             // CREATE ZIP FILE
 
@@ -213,50 +216,74 @@ public class SFImportBuilder {
 
     }
 
-    private void PackageDirectory(CMSDirectory directory) {
+    private void PackageFiles(List<CMSFile> files) {
 
-        // PROCESS THE FILES THAT ARE DIRECTLY IN THIS DIRECTORY
+        files.ForEach(file => {
 
-        for (int i = 0; i < directory.Files.Count; i++) {
-            this.PackageFile(directory.Files[i]);
-        }
+            // CREATE PATHS
 
-        // LOOP THROUGH THE SUBDIRECTORIES AND PROCESS EACH ONE
+            string outputFileWrapperFolderPath = Path.Combine(this.Config.OutputFolderPath, "ImportPackage", file.Meta_Path, file.File_Name);
 
-        directory.SubDirectories.ForEach(subDirectory => {
-            this.PackageDirectory(subDirectory);
+            // CREATE NEW FOLDERS
+
+            if (!Directory.Exists(outputFileWrapperFolderPath)) {
+                Directory.CreateDirectory(outputFileWrapperFolderPath);
+                Directory.CreateDirectory(Path.Combine(outputFileWrapperFolderPath, "_media"));
+            }
+
+            // COPY THE FILE INTO THE NEW LOCATION
+
+            File.Copy(file.File_Path, Path.Combine(outputFileWrapperFolderPath, "_media", file.File_Name), true);
+
+            // CREATE THE JSON FILES
+
+            this.FileOutputUtility.CreateFile(
+                filePathWithinRoot: Path.Combine(outputFileWrapperFolderPath, "content.json"),
+                fileContents: JsonSerializer.Serialize(file.Content_JSON, JSON_ContentContext.Default.JSON_Content)
+            );
+
+            this.FileOutputUtility.CreateFile(
+                filePathWithinRoot: Path.Combine(outputFileWrapperFolderPath, "_meta.json"),
+                fileContents: JsonSerializer.Serialize(file.Meta_JSON, JSON_MetaContext.Default.JSON_Meta)
+            );
+
         });
 
     }
 
-    private void PackageFile(CMSFile file) {
+    private void CreateSummary(List<CMSFile> files) {
 
-        // CREATE PATHS
+        bool haveWrittenCSVHeaders = false;
 
-        string outputFileWrapperFolderPath = Path.Combine(this.Config.OutputFolderPath, "ImportPackage", file.Meta_Path, file.File_Name);
+        this.FileOutputUtility.CreateEmptyFile("Files Summary.csv");
 
-        // CREATE NEW FOLDERS
+        files.ForEach(file => {
 
-        if (!Directory.Exists(outputFileWrapperFolderPath)) {
-            Directory.CreateDirectory(outputFileWrapperFolderPath);
-            Directory.CreateDirectory(Path.Combine(outputFileWrapperFolderPath, "_media"));
-        }
+            if (!haveWrittenCSVHeaders) {
 
-        // COPY THE FILE INTO THE NEW LOCATION
+                this.FileOutputUtility.WriteToFile(
+                    string.Join(
+                        ",",
+                        file.AnalysisValues.Keys.Select(v => CSVUtility.EscapeString(v))
+                    )
+                );
 
-        File.Copy(file.File_Path, Path.Combine(outputFileWrapperFolderPath, "_media", file.File_Name), true);
+                haveWrittenCSVHeaders = true;
 
-        // CREATE THE JSON FILES
+            }
 
-        this.FileOutputUtility.CreateFile(
-            filePathWithinRoot: Path.Combine(outputFileWrapperFolderPath, "content.json"),
-            fileContents: JsonSerializer.Serialize(file.Content_JSON, JSON_ContentContext.Default.JSON_Content)
-        );
+            this.FileOutputUtility.WriteLineBreakToFile();
 
-        this.FileOutputUtility.CreateFile(
-            filePathWithinRoot: Path.Combine(outputFileWrapperFolderPath, "_meta.json"),
-            fileContents: JsonSerializer.Serialize(file.Meta_JSON, JSON_MetaContext.Default.JSON_Meta)
-        );
+            this.FileOutputUtility.WriteToFile(
+                string.Join(
+                    ",",
+                    file.AnalysisValues.Values.Select(v => CSVUtility.EscapeString(v))
+                )
+            );
+
+        });
+
+        this.FileOutputUtility.CloseFile();
 
     }
 

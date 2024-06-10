@@ -1,4 +1,7 @@
-﻿namespace SF_Import_Builder.Models; 
+﻿using System.Collections.Generic;
+using System.IO;
+
+namespace SF_Import_Builder.Models; 
 public class CMSDirectory {
 
     /***********************************************************************************************************/
@@ -30,5 +33,23 @@ public class CMSDirectory {
     /***********************************************************************************************************/
     /************************************************* METHODS *************************************************/
     /***********************************************************************************************************/
+
+    public List<CMSFile> GetAllFiles () {
+
+        // PROCESS THE FILES THAT ARE DIRECTLY IN THIS DIRECTORY
+
+        List<CMSFile> files = [];
+        
+        files.AddRange(this.Files);
+
+        // LOOP THROUGH THE SUBDIRECTORIES AND PROCESS EACH ONE
+
+        this.SubDirectories.ForEach(subDirectory => {
+            files.AddRange(subDirectory.GetAllFiles());
+        });
+
+        return files;
+
+    }
 
 }
