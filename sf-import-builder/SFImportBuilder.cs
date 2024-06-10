@@ -117,9 +117,12 @@ public class SFImportBuilder {
 
             if (filePath != Path.Combine(directoryPath, "sfc_titles.csv")) {
 
-                CMSFile file = this.ScanFile(
-                    filePath: filePath,
-                    cmsPath: directory.PathWithinRoot
+                CMSFile file = new(
+                    file_Name: Path.GetFileName(filePath),
+                    content_Title: Path.GetFileNameWithoutExtension(filePath),
+                    file_Path: filePath,
+                    meta_Path: directory.PathWithinRoot,
+                    content_MimeType: this.ConvertExtensionToMimeType(Path.GetExtension(filePath))
                 );
 
                 matchingCMSTitles = cmsTitlesForDirectory.Where(overRide => overRide.FileName == file.File_Name).ToList();
@@ -150,20 +153,6 @@ public class SFImportBuilder {
         });
 
         return directory;
-
-    }
-
-    private CMSFile ScanFile(string filePath, string cmsPath, string? cmsTitle = null) {
-
-        CMSFile file = new(
-            file_Name: Path.GetFileName(filePath),
-            content_Title: cmsTitle ?? Path.GetFileNameWithoutExtension(filePath),
-            file_Path: filePath,
-            meta_Path: cmsPath,
-            content_MimeType: this.ConvertExtensionToMimeType(Path.GetExtension(filePath))
-        );
-
-        return file;
 
     }
 
