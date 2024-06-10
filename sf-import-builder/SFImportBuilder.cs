@@ -284,4 +284,19 @@ public class SFImportBuilder {
 
     }
 
+    private bool IsDirectoryACMSFile(string directoryPath) {
+
+        List<string> subDirectoryPaths = Directory.GetDirectories(directoryPath).ToList();
+
+        if (subDirectoryPaths.Count == 1 && Path.GetFileName(subDirectoryPaths[0]) == "_media") {
+
+            return true;
+
+        } else {
+
+            return false;
+        }
+
+    }
+
 }
