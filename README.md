@@ -4,6 +4,7 @@ This is a .NET 8 program written to help manage SF ECMS instances that contain l
 
 1. Scan, format, and create zipped import packages (containing all required files such as `content.json` and `_meta.json` files).
    * Unlimited nested subfolders are supported. Your ECMS will create any needed folders based on information in the import ZIP file.
+   * CMS Titles default to the file name without extension, but can be overridden per-file, or per-folder, by adding a file called `sfc_titles.csv` in the source root folder. See example 3 for details.
 3. Scan and analyze formatted folders, such as unzipped exports from an ECMS.
 
 The JSON files are created based on the specification provided by Salesforce here: https://help.salesforce.com/s/articleView?id=sf.cms_import_content_json_enhanced.htm
