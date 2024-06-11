@@ -285,7 +285,7 @@ public class SFECMSUtils {
 
     private string ConvertExtensionToMimeType(string extension) {
 
-        return extension switch {
+        return extension.ToLower() switch {
             ".aac" => "audio/aac",
             ".abw" => "application/x-abiword",
             ".apng" => "image/apng",
@@ -303,6 +303,7 @@ public class SFECMSUtils {
             ".csv" => "text/csv",
             ".doc" => "application/msword",
             ".docx" => "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            ".dwg" => "image/vnd.dwg",
             ".eot" => "application/vnd.ms-fontobject",
             ".epub" => "application/epub+zip",
             ".gz" => "application/gzip",
