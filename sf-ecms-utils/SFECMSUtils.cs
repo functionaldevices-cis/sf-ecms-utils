@@ -7,14 +7,14 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Text.Json;
 
-namespace SF_ECMS_Utils; 
+namespace SF_ECMS_Utils;
 public class SFECMSUtils {
 
     private Config Config { get; set; }
 
     private FileOutputUtility FileOutputUtility { get; set; }
 
-    private List<CMSTitleOverride> TitleOverrides { get; set; } = new();
+    private CMSTitleBuilder TitleBuilder { get; set; }
 
     public SFECMSUtils(Config config) {
 
@@ -29,7 +29,7 @@ public class SFECMSUtils {
 
                 // CHECK TO SEE IF THERE IS A TITLES OVERRIDE FILE IN THE ROOT FOLDER
 
-                this.TitleOverrides = this.LoadCMSTitleOverrides(this.Config.SourceFiles_FolderPath);
+                this.TitleBuilder = this.LoadCMSTitleOverrides(this.Config.SourceFiles_FolderPath);
 
                 // SCAN THE DIRECTORY AND BUILD A LIST OF WHAT FOLDERS AND FILES NEED TO BE PROCESSED
 
@@ -91,9 +91,9 @@ public class SFECMSUtils {
 
     }
 
-    private List<CMSTitleOverride> LoadCMSTitleOverrides(string directoryPath) {
+    private CMSTitleBuilder LoadCMSTitleOverrides(string directoryPath) {
 
-        List<CMSTitleOverride> titleOverrides = new();
+        List<CMSTitleOverride> titleOverrides = [];
 
         string titlesFilePath = Path.Combine(directoryPath, "sfc_titles.csv");
 
@@ -109,7 +109,7 @@ public class SFECMSUtils {
 
         }
 
-        return titleOverrides;
+        return new CMSTitleBuilder(titleOverrides);
 
     }
 
@@ -123,7 +123,6 @@ public class SFECMSUtils {
 
         List<string> subDirectoryPaths;
         List<string> filePaths;
-        CMSTitleOverridesForDirectory titleOverrides = new();
         CMSFile? file;
 
         // LOAD A LIST OF ALL SUBFOLDERS AND FILES
@@ -137,7 +136,7 @@ public class SFECMSUtils {
 
             subDirectoryPaths = Directory.GetDirectories(directory.FullPath).ToList();
             filePaths = Directory.GetFiles(directory.FullPath, "*.*", SearchOption.TopDirectoryOnly).ToList().Where(filePaths => Path.GetFileName(filePaths) != "sfc_titles.csv").ToList();
-            titleOverrides = this.GetCMSTitleOverridesForCurrentDirectory(directory);
+            this.TitleBuilder.SetCMSPath(directory.PathWithinRoot);
 
         }
 
@@ -152,8 +151,7 @@ public class SFECMSUtils {
             } else {
                 file = ScanRawFilePath(
                     filePath: filePath,
-                    pathWithinRoot: directory.PathWithinRoot,
-                    titleOverrides: titleOverrides
+                    pathWithinRoot: directory.PathWithinRoot
                 );
             }
 
@@ -181,20 +179,18 @@ public class SFECMSUtils {
 
     }
 
-    private CMSFile? ScanRawFilePath(string filePath, string pathWithinRoot, CMSTitleOverridesForDirectory titleOverrides) {
+    private CMSFile? ScanRawFilePath(string filePath, string pathWithinRoot) {
 
         CMSFile file = new(
             file_Name: Path.GetFileName(filePath),
-            content_Title: Path.GetFileNameWithoutExtension(filePath),
+            content_Title: this.TitleBuilder.GetTitle(
+                defaultTitle: Path.GetFileNameWithoutExtension(filePath),
+                fileName: Path.GetFileName(filePath)
+            ),
             file_Path: filePath,
             meta_Path: pathWithinRoot,
             content_MimeType: this.ConvertExtensionToMimeType(Path.GetExtension(filePath))
         );
-
-        string? titleOveride = titleOverrides.GetOverrideForFile(file.File_Name);
-        if (titleOveride != null) {
-            file.Content_Title = titleOveride;
-        }
 
         return file;
 
@@ -283,22 +279,6 @@ public class SFECMSUtils {
         this.FileOutputUtility.CreateFile(
             filePathWithinRoot: "Files Summary.csv",
             fileLines: csvFileLines
-        );
-
-    }
-
-    private CMSTitleOverridesForDirectory GetCMSTitleOverridesForCurrentDirectory(CMSDirectory directory) {
-
-        CMSTitleOverride? defaultCMSTitleForDirectory = null;
-        List<CMSTitleOverride> cmsTitlesForDirectory = this.TitleOverrides.Where(overRide => overRide.CMSPath == directory.PathWithinRoot).ToList();
-        List<CMSTitleOverride> matchingCMSTitles = cmsTitlesForDirectory.Where(overRide => overRide.FileName == "*").ToList();
-        if (matchingCMSTitles.Count > 0) {
-            defaultCMSTitleForDirectory = matchingCMSTitles[0];
-        }
-
-        return new(
-            defaultOverride: defaultCMSTitleForDirectory,
-            perFileOverrides: cmsTitlesForDirectory
         );
 
     }
