@@ -68,7 +68,7 @@ public class Config {
 
                 if (!Directory.Exists(this.PackagedFiles_FolderPath)) {
 
-                    throw new Exception("Error, the 'PackagedFiles_FolderPath' folder path is invalid.");
+                    Directory.CreateDirectory(this.SourceFiles_FolderPath);
 
                 }
 
