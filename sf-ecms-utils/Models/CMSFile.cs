@@ -5,56 +5,56 @@ public class CMSFile {
     /********************************************** PROPERTIES *************************************************/
     /***********************************************************************************************************/
 
-    public string File_Name { get; init; }
+    public string FileName { get; init; }
 
-    public string File_Path { get; init; }
+    public string FilePath { get; init; }
 
-    public string Content_Title { get; set; }
+    public string CMSTitle { get; set; }
 
-    public string Content_MimeType { get; init; }
+    public string CMSMimeType { get; init; }
 
-    public string? Meta_ContentKey { get; init; }
+    public string? CMSContentKey { get; init; }
 
-    public string Meta_Path { get; init; }
+    public string CMSPath { get; init; }
 
     public Dictionary<string, string> AnalysisValues => new() {
-        { "CMS Content Key", this.Meta_ContentKey ?? "" },
-        { "CMS Title", this.Content_Title },
-        { "CMS Folder Path", this.Meta_Path },
-        { "File Name", this.File_Name },
-        { "MimeType", this.Content_MimeType }
+        { "CMS Content Key", this.CMSContentKey ?? "" },
+        { "CMS Title", this.CMSTitle },
+        { "CMS Folder Path", this.CMSPath },
+        { "File Name", this.FileName },
+        { "MimeType", this.CMSMimeType }
     };
 
-    public JSON_Content Content_JSON => new(
+    public JSON_Content CMSContentJSON => new(
         type: "sfdc_cms__document",
-        title: this.Content_Title,
+        title: this.CMSTitle,
         contentBody: new(
             sfdc_cms_media: new(
                 source: new(
                     _type: "file",
-                    mimeType: this.Content_MimeType
+                    mimeType: this.CMSMimeType
                 )
             )
         )
     );
 
-    public JSON_Meta Meta_JSON => new(
-        contentKey: this.Meta_ContentKey,
-        path : this.Meta_Path.Replace('\\', '/')
+    public JSON_Meta CMSMetaJSON => new(
+        contentKey: this.CMSContentKey,
+        path : this.CMSPath.Replace('\\', '/')
     );
 
     /***********************************************************************************************************/
     /*********************************************** CONSTRUCTOR ***********************************************/
     /***********************************************************************************************************/
 
-    public CMSFile(string file_Name, string content_Title, string file_Path, string meta_Path, string content_MimeType, string? meta_ContentKey = null) {
+    public CMSFile(string fileName, string cmsTitle, string filePath, string cmsPath, string cmsMimeType, string? CMSContentKey = null) {
 
-        this.File_Name = file_Name;
-        this.File_Path = file_Path;
-        this.Content_Title = content_Title;
-        this.Content_MimeType = content_MimeType;
-        this.Meta_ContentKey = meta_ContentKey;
-        this.Meta_Path = meta_Path;
+        this.FileName = fileName;
+        this.FilePath = filePath;
+        this.CMSTitle = cmsTitle;
+        this.CMSMimeType = cmsMimeType;
+        this.CMSContentKey = CMSContentKey;
+        this.CMSPath = cmsPath;
 
     }
 

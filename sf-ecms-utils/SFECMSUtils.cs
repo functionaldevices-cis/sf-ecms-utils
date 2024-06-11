@@ -116,9 +116,9 @@ public class SFECMSUtils {
     private CMSDirectory ScanDirectory(string directoryPath, string rootPath, bool isFormatted) {
 
         CMSDirectory directory = new(
-            name: Path.GetFileName(directoryPath) ?? "",
-            fullPath: directoryPath,
-            pathWithinRoot: directoryPath.Replace(rootPath, "").Trim('\\')
+            directoryName: Path.GetFileName(directoryPath) ?? "",
+            directoryPath: directoryPath,
+            cmsPath: directoryPath.Replace(rootPath, "").Trim('\\')
         );
 
         List<string> subDirectoryPaths;
@@ -129,14 +129,14 @@ public class SFECMSUtils {
 
         if (isFormatted) {
 
-            subDirectoryPaths = Directory.GetDirectories(directory.FullPath).Where(subDirectoryPath => !this.IsDirectoryACMSFile(subDirectoryPath)).ToList();
-            filePaths = Directory.GetDirectories(directory.FullPath).Where(subDirectoryPath => this.IsDirectoryACMSFile(subDirectoryPath)).ToList();
+            subDirectoryPaths = Directory.GetDirectories(directory.DirectoryPath).Where(subDirectoryPath => !this.IsDirectoryACMSFile(subDirectoryPath)).ToList();
+            filePaths = Directory.GetDirectories(directory.DirectoryPath).Where(subDirectoryPath => this.IsDirectoryACMSFile(subDirectoryPath)).ToList();
 
         } else {
 
-            subDirectoryPaths = Directory.GetDirectories(directory.FullPath).ToList();
-            filePaths = Directory.GetFiles(directory.FullPath, "*.*", SearchOption.TopDirectoryOnly).ToList().Where(filePaths => Path.GetFileName(filePaths) != "sfc_titles.csv").ToList();
-            this.TitleBuilder.SetCMSPath(directory.PathWithinRoot);
+            subDirectoryPaths = Directory.GetDirectories(directory.DirectoryPath).ToList();
+            filePaths = Directory.GetFiles(directory.DirectoryPath, "*.*", SearchOption.TopDirectoryOnly).ToList().Where(filePaths => Path.GetFileName(filePaths) != "sfc_titles.csv").ToList();
+            this.TitleBuilder.SetCMSPath(directory.CMSPath);
 
         }
 
@@ -151,7 +151,7 @@ public class SFECMSUtils {
             } else {
                 file = ScanRawFilePath(
                     filePath: filePath,
-                    pathWithinRoot: directory.PathWithinRoot
+                    pathWithinRoot: directory.CMSPath
                 );
             }
 
@@ -182,14 +182,14 @@ public class SFECMSUtils {
     private CMSFile? ScanRawFilePath(string filePath, string pathWithinRoot) {
 
         CMSFile file = new(
-            file_Name: Path.GetFileName(filePath),
-            content_Title: this.TitleBuilder.GetTitle(
+            fileName: Path.GetFileName(filePath),
+            cmsTitle: this.TitleBuilder.GetTitle(
                 defaultTitle: Path.GetFileNameWithoutExtension(filePath),
                 fileName: Path.GetFileName(filePath)
             ),
-            file_Path: filePath,
-            meta_Path: pathWithinRoot,
-            content_MimeType: this.ConvertExtensionToMimeType(Path.GetExtension(filePath))
+            filePath: filePath,
+            cmsPath: pathWithinRoot,
+            cmsMimeType: this.ConvertExtensionToMimeType(Path.GetExtension(filePath))
         );
 
         return file;
@@ -215,12 +215,12 @@ public class SFECMSUtils {
                 JSON_Meta metaJSON = JsonSerializer.Deserialize(metaJSONFileContent, JSON_MetaContext.Default.JSON_Meta) ?? throw new Exception("Error, unable to parse a meta file.");
 
                 return new CMSFile(
-                    file_Name: Path.GetFileName(mediaPath),
-                    file_Path: mediaPath,
-                    content_Title: contentJSON.title,
-                    content_MimeType: contentJSON.contentBody.sfdc_cms_media.source.mimeType,
-                    meta_Path: metaJSON.path,
-                    meta_ContentKey: metaJSON.contentKey
+                    fileName: Path.GetFileName(mediaPath),
+                    filePath: mediaPath,
+                    cmsTitle: contentJSON.title,
+                    cmsMimeType: contentJSON.contentBody.sfdc_cms_media.source.mimeType,
+                    cmsPath: metaJSON.path,
+                    CMSContentKey: metaJSON.contentKey
                 );
 
             }
@@ -237,7 +237,7 @@ public class SFECMSUtils {
 
             // CREATE PATHS
 
-            string outputFileWrapperFolderPath = Path.Combine(this.Config.PackagedFiles_FolderPath, "Packaged Files", file.Meta_Path, file.File_Name);
+            string outputFileWrapperFolderPath = Path.Combine(this.Config.PackagedFiles_FolderPath, "Packaged Files", file.CMSPath, file.FileName);
 
             // CREATE NEW FOLDERS
 
@@ -248,18 +248,18 @@ public class SFECMSUtils {
 
             // COPY THE FILE INTO THE NEW LOCATION
 
-            File.Copy(file.File_Path, Path.Combine(outputFileWrapperFolderPath, "_media", file.File_Name), true);
+            File.Copy(file.FilePath, Path.Combine(outputFileWrapperFolderPath, "_media", file.FileName), true);
 
             // CREATE THE JSON FILES
 
             this.FileOutputUtility.CreateFile(
                 filePathWithinRoot: Path.Combine(outputFileWrapperFolderPath, "content.json"),
-                fileContents: JsonSerializer.Serialize(file.Content_JSON, JSON_ContentContext.Default.JSON_Content)
+                fileContents: JsonSerializer.Serialize(file.CMSContentJSON, JSON_ContentContext.Default.JSON_Content)
             );
 
             this.FileOutputUtility.CreateFile(
                 filePathWithinRoot: Path.Combine(outputFileWrapperFolderPath, "_meta.json"),
-                fileContents: JsonSerializer.Serialize(file.Meta_JSON, JSON_MetaContext.Default.JSON_Meta)
+                fileContents: JsonSerializer.Serialize(file.CMSMetaJSON, JSON_MetaContext.Default.JSON_Meta)
             );
 
         });
