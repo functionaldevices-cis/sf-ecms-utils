@@ -40,7 +40,7 @@ public class CMSFile {
 
     public JSON_Meta CMSMetaJSON => new(
         contentKey: this.CMSContentKey,
-        path : this.CMSPath.Replace('\\', '/')
+        path : this.CMSPath
     );
 
     /***********************************************************************************************************/

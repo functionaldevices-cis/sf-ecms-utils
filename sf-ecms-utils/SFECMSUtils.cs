@@ -25,7 +25,7 @@ public class SFECMSUtils {
 
         try {
 
-            if (Config.Action == "PackageFiles") {      
+            if (this.Config.Action == "PackageFiles") {      
 
                 // CHECK TO SEE IF THERE IS A TITLES OVERRIDE FILE IN THE ROOT FOLDER
 
@@ -118,7 +118,7 @@ public class SFECMSUtils {
         CMSDirectory directory = new(
             directoryName: Path.GetFileName(directoryPath) ?? "",
             directoryPath: directoryPath,
-            cmsPath: directoryPath.Replace(rootPath, "").Trim('\\')
+            cmsPath: directoryPath.Replace(rootPath, "").Trim('\\').Replace('\\', '/')
         );
 
         List<string> subDirectoryPaths;
@@ -151,7 +151,7 @@ public class SFECMSUtils {
             } else {
                 file = ScanRawFilePath(
                     filePath: filePath,
-                    pathWithinRoot: directory.CMSPath
+                    cmsPath: directory.CMSPath
                 );
             }
 
@@ -179,7 +179,7 @@ public class SFECMSUtils {
 
     }
 
-    private CMSFile? ScanRawFilePath(string filePath, string pathWithinRoot) {
+    private CMSFile? ScanRawFilePath(string filePath, string cmsPath) {
 
         CMSFile file = new(
             fileName: Path.GetFileName(filePath),
@@ -188,7 +188,7 @@ public class SFECMSUtils {
                 fileName: Path.GetFileName(filePath)
             ),
             filePath: filePath,
-            cmsPath: pathWithinRoot,
+            cmsPath: cmsPath,
             cmsMimeType: this.ConvertExtensionToMimeType(Path.GetExtension(filePath))
         );
 
