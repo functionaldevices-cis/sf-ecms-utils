@@ -65,7 +65,7 @@ public class CMSTitleBuilder
             }
         }
 
-        return title;
+        return title.Replace("[FILENAME]", defaultTitle);
 
     }
 
