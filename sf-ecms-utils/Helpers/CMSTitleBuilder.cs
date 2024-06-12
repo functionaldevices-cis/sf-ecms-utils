@@ -10,9 +10,9 @@ public class CMSTitleBuilder
     /********************************************** PROPERTIES *************************************************/
     /***********************************************************************************************************/
 
-    public CMSTitleOverride? DefaultTitleForDirectory {
+    public CSV_CMSTitleOverride? DefaultTitleForDirectory {
         get {
-            List<CMSTitleOverride> matchingCMSTitles = this.TitleOverridesForDirectory.Where(overRide => overRide.FileName == "*").ToList();
+            List<CSV_CMSTitleOverride> matchingCMSTitles = this.TitleOverridesForDirectory.Where(overRide => overRide.FileName == "*").ToList();
             if (matchingCMSTitles.Count > 0) {
                 return matchingCMSTitles[0];
             }
