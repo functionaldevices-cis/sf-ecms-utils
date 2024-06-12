@@ -91,14 +91,14 @@ public class SFECMSUtils {
 
     }
 
-    private List<CMSTitleOverride> LoadCMSTitleOverrides(string directoryPath) {
+    private List<CSV_CMSTitleOverride> LoadCMSTitleOverrides(string directoryPath) {
 
         try {
 
             if (File.Exists(Path.Combine(directoryPath, "sfc_titles.csv"))) {
                 using StreamReader reader = new(Path.Combine(directoryPath, "sfc_titles.csv"));
                 using CsvReader csv = new(reader, CultureInfo.InvariantCulture);
-                return csv.GetRecords<CMSTitleOverride>().ToList();
+                return csv.GetRecords<CSV_CMSTitleOverride>().ToList();
             }
         } catch (Exception ex) {
 

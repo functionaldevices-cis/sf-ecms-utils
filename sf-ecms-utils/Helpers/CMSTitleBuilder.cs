@@ -20,17 +20,17 @@ public class CMSTitleBuilder
         }
     }
 
-    public List<CMSTitleOverride> TitleOverrides { get; set; }
+    public List<CSV_CMSTitleOverride> TitleOverrides { get; set; }
 
     public string CMSPath { get; set; }
 
-    public List<CMSTitleOverride> TitleOverridesForDirectory => this.TitleOverrides.Where(overRide => overRide.CMSPath == this.CMSPath).ToList();
+    public List<CSV_CMSTitleOverride> TitleOverridesForDirectory => this.TitleOverrides.Where(overRide => overRide.CMSPath == this.CMSPath).ToList();
 
     /***********************************************************************************************************/
     /*********************************************** CONSTRUCTOR ***********************************************/
     /***********************************************************************************************************/
 
-    public CMSTitleBuilder(List<CMSTitleOverride> titleOverrides) {
+    public CMSTitleBuilder(List<CSV_CMSTitleOverride> titleOverrides) {
         
         this.TitleOverrides = titleOverrides;
         this.CMSPath = "";
@@ -51,7 +51,11 @@ public class CMSTitleBuilder
 
         string title = defaultTitle;
 
-        List<CMSTitleOverride> matchingCMSTitles = TitleOverrides.Where(overRide => overRide.FileName == fileName).ToList();
+        List<CSV_CMSTitleOverride> matchingCMSTitles = this.TitleOverridesForDirectory.Where(overRide => overRide.FileName == fileName).ToList();
+
+        if (this.CMSPath=="Flyers, Handouts, Etc") {
+
+        }
 
         if (matchingCMSTitles.Count > 0)
         {
