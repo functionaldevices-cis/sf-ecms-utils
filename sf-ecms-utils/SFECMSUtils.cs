@@ -1,6 +1,9 @@
-﻿using SF_ECMS_Utils.Helpers;
+﻿using CsvHelper.Configuration;
+using CsvHelper;
+using SF_ECMS_Utils.Helpers;
 using SF_ECMS_Utils.Models;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
@@ -22,14 +25,11 @@ public class SFECMSUtils {
 
         this.Config = config;
         this.FileOutputUtility = new(this.Config.PackagedFiles_FolderPath);
+        this.TitleBuilder = new(this.LoadCMSTitleOverrides(this.Config.SourceFiles_FolderPath));
 
         try {
 
             if (this.Config.Action == "PackageFiles") {      
-
-                // CHECK TO SEE IF THERE IS A TITLES OVERRIDE FILE IN THE ROOT FOLDER
-
-                this.TitleBuilder = this.LoadCMSTitleOverrides(this.Config.SourceFiles_FolderPath);
 
                 // SCAN THE DIRECTORY AND BUILD A LIST OF WHAT FOLDERS AND FILES NEED TO BE PROCESSED
 
@@ -91,25 +91,20 @@ public class SFECMSUtils {
 
     }
 
-    private CMSTitleBuilder LoadCMSTitleOverrides(string directoryPath) {
+    private List<CMSTitleOverride> LoadCMSTitleOverrides(string directoryPath) {
 
-        List<CMSTitleOverride> titleOverrides = [];
+        try {
 
-        string titlesFilePath = Path.Combine(directoryPath, "sfc_titles.csv");
-
-        if (File.Exists(titlesFilePath)) {
-
-            titleOverrides = CSVUtility.UnSerialize(File.ReadAllLines(titlesFilePath).ToList()).Select(
-                line => new CMSTitleOverride(
-                    cmsPath: line.ContainsKey("CMS Path") ? line["CMS Path"] : "",
-                    fileName: line.ContainsKey("File Name") ? line["File Name"] : "",
-                    cmsTitle: line.ContainsKey("CMS Title") ? line["CMS Title"] : ""
-                )
-            ).ToList();
+            if (File.Exists(Path.Combine(directoryPath, "sfc_titles.csv"))) {
+                using StreamReader reader = new(Path.Combine(directoryPath, "sfc_titles.csv"));
+                using CsvReader csv = new(reader, CultureInfo.InvariantCulture);
+                return csv.GetRecords<CMSTitleOverride>().ToList();
+            }
+        } catch (Exception ex) {
 
         }
 
-        return new CMSTitleBuilder(titleOverrides);
+        return [];
 
     }
 

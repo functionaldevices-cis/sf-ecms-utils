@@ -1,4 +1,6 @@
-﻿namespace SF_ECMS_Utils.Models;
+﻿using CsvHelper.Configuration.Attributes;
+
+namespace SF_ECMS_Utils.Models;
 
 public class CMSTitleOverride {
 
@@ -6,22 +8,17 @@ public class CMSTitleOverride {
     /********************************************** PROPERTIES *************************************************/
     /***********************************************************************************************************/
 
-    public string CMSPath { get; set; }
+    [Name("CMS Path")]
+    public string CMSPath { get; set; } = "";
 
-    public string FileName { get; set; }
+    [Name("File Name")]
+    public string FileName { get; set; } = "";
 
-    public string CMSTitle { get; set; }
+    [Name("CMS Title")]
+    public string CMSTitle { get; set; } = "";
 
     /***********************************************************************************************************/
     /*********************************************** CONSTRUCTOR ***********************************************/
     /***********************************************************************************************************/
-
-    public CMSTitleOverride(string cmsPath = "", string fileName = "", string cmsTitle = "") {
-
-        this.CMSPath = cmsPath;
-        this.FileName = fileName;
-        this.CMSTitle = cmsTitle;
-
-    }
 
 }

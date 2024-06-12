@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CsvHelper;
 
 namespace SF_ECMS_Utils.Helpers;
 
@@ -28,27 +29,6 @@ public static class CSVUtility {
         }
 
         return value;
-
-    }
-
-    public static List<Dictionary<string, string>> UnSerialize(List<string> csvFileContents) {
-
-        List<List<string>> lines = csvFileContents.Select(
-            line => line.Split(',').Select(value => CSVUtility.UnEscapeString(value)).ToList()
-        ).ToList();
-
-        List<Dictionary<string, string>> linesAsDictionaries = lines.Select(
-            values => lines[0].Zip(
-                values, (k, v) => new { k, v }
-            ).ToDictionary(
-                x => x.k,
-                x => x.v
-            )
-        ).ToList();
-
-        linesAsDictionaries.RemoveAt(0);
-
-        return linesAsDictionaries;
 
     }
 
