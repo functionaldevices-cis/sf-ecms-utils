@@ -1,6 +1,8 @@
-﻿using System;
+﻿using CsvHelper;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -49,6 +51,15 @@ public class FileOutputUtility {
 
         }
 
+
+    }
+
+    public void CreateCSVFile<T>(string filePathWithinRoot, List<T> records) {
+
+        this.CreateEmptyFile(filePathWithinRoot);
+        CsvWriter csv = new(this.SW, CultureInfo.InvariantCulture);
+        csv.WriteRecords(records);
+        this.CloseFile();
 
     }
 

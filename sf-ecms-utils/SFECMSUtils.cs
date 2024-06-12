@@ -96,10 +96,11 @@ public class SFECMSUtils {
         try {
 
             if (File.Exists(Path.Combine(directoryPath, "sfc_titles.csv"))) {
-                using StreamReader reader = new(Path.Combine(directoryPath, "sfc_titles.csv"));
-                using CsvReader csv = new(reader, CultureInfo.InvariantCulture);
+                StreamReader reader = new(Path.Combine(directoryPath, "sfc_titles.csv"));
+                CsvReader csv = new(reader, CultureInfo.InvariantCulture);
                 return csv.GetRecords<CSV_CMSTitleOverride>().ToList();
             }
+
         } catch (Exception ex) {
 
         }
@@ -263,17 +264,11 @@ public class SFECMSUtils {
 
     private void CreateSummary(List<CMSFile> files) {
 
-        // CREATE A LIST OF TEXT LINES
-
-        List<string> csvFileLines = CSVUtility.Serialize(
-            files.Select(file => file.AnalysisValues).ToList()
-        );
-
         // WRITE THE LINES TO A FILE
 
-        this.FileOutputUtility.CreateFile(
+        this.FileOutputUtility.CreateCSVFile(
             filePathWithinRoot: "Files Summary.csv",
-            fileLines: csvFileLines
+            records: files.Select(file => file.SummarizedValues).ToList()
         );
 
     }

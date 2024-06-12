@@ -17,12 +17,12 @@ public class CMSFile {
 
     public string CMSPath { get; init; }
 
-    public Dictionary<string, string> AnalysisValues => new() {
-        { "CMS Content Key", this.CMSContentKey ?? "" },
-        { "CMS Title", this.CMSTitle },
-        { "CMS Folder Path", this.CMSPath },
-        { "File Name", this.FileName },
-        { "MimeType", this.CMSMimeType }
+    public CSV_SummarizedCMSFile SummarizedValues => new() {
+        CMSContentKey = this.CMSContentKey ?? "",
+        CMSTitle = this.CMSTitle ?? "",
+        CMSPath = this.CMSPath ?? "",
+        FileName = this.FileName ?? "",
+        CMSMimeType = this.CMSMimeType ?? ""
     };
 
     public JSON_Content CMSContentJSON => new(
