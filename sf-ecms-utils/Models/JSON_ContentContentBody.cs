@@ -2,20 +2,20 @@
 
 namespace SF_ECMS_Utils.Models;
 
-public class JSON_Content_ContentBody {
+public class JSON_ContentContentBody {
 
     /***********************************************************************************************************/
     /********************************************** PROPERTIES *************************************************/
     /***********************************************************************************************************/
 
     [JsonPropertyName("sfdc_cms:media")]
-    public JSON_Content_SFDCMedia sfdc_cms_media { get; set; }
+    public JSON_ContentSFDCMedia sfdc_cms_media { get; set; }
 
     /***********************************************************************************************************/
     /*********************************************** CONSTRUCTOR ***********************************************/
     /***********************************************************************************************************/
 
-    public JSON_Content_ContentBody(JSON_Content_SFDCMedia sfdc_cms_media) {
+    public JSON_ContentContentBody(JSON_ContentSFDCMedia sfdc_cms_media) {
 
         this.sfdc_cms_media = sfdc_cms_media;
 
@@ -24,6 +24,6 @@ public class JSON_Content_ContentBody {
 }
 
 [JsonSourceGenerationOptions(WriteIndented = true)]
-[JsonSerializable(typeof(JSON_Content_ContentBody))]
-internal partial class JSON_Content_ContentBodyContext : JsonSerializerContext {
+[JsonSerializable(typeof(JSON_ContentContentBody))]
+internal partial class JSONContext_ContentContentBody : JsonSerializerContext {
 }

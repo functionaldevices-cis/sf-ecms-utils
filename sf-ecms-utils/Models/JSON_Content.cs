@@ -12,13 +12,13 @@ public class JSON_Content {
 
     public string title { get; set; }
 
-    public JSON_Content_ContentBody contentBody { get; set; }
+    public JSON_ContentContentBody contentBody { get; set; }
 
     /***********************************************************************************************************/
     /*********************************************** CONSTRUCTOR ***********************************************/
     /***********************************************************************************************************/
 
-    public JSON_Content(string type, string title, JSON_Content_ContentBody contentBody) {
+    public JSON_Content(string type, string title, JSON_ContentContentBody contentBody) {
 
         this.type = "sfdc_cms__document";
         this.title = title;

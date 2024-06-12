@@ -2,40 +2,31 @@
 
 namespace SF_ECMS_Utils.Models;
 
-public class JSON_Content_Source {
+public class JSON_ContentSFDCMedia {
 
     /***********************************************************************************************************/
     /********************************************** PROPERTIES *************************************************/
     /***********************************************************************************************************/
 
-    [JsonPropertyName("type")]
-    public string _type { get; set; }
-
-    public string mimeType { get; set; }
+    public JSON_ContentSource source { get; set; }
 
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    [JsonPropertyName("ref")]
-    public string? _ref { get; set; }
-
-    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
-    public int? size { get; set; }
+    public string? url { get; set; }
 
     /***********************************************************************************************************/
     /*********************************************** CONSTRUCTOR ***********************************************/
     /***********************************************************************************************************/
 
-    public JSON_Content_Source(string _type, string mimeType, string? _ref = null, int? size = null) {
+    public JSON_ContentSFDCMedia(JSON_ContentSource source, string? url = null) {
 
-        this._type = _type;
-        this.mimeType = mimeType;
-        this._ref = _ref;
-        this.size = size;
+        this.source = source;
+        this.url = url;
 
     }
 
 }
 
 [JsonSourceGenerationOptions(WriteIndented = true)]
-[JsonSerializable(typeof(JSON_Content_Source))]
-internal partial class JSON_Content_SourceContext : JsonSerializerContext {
+[JsonSerializable(typeof(JSON_ContentSFDCMedia))]
+internal partial class JSONContext_ContentSFDCMedia : JsonSerializerContext {
 }
