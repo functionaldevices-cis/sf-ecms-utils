@@ -19,10 +19,11 @@ public class CMSFile {
 
     public CSV_SummarizedCMSFile SummarizedValues => new() {
         CMSContentKey = this.CMSContentKey ?? "",
-        CMSTitle = this.CMSTitle ?? "",
-        CMSPath = this.CMSPath ?? "",
-        FileName = this.FileName ?? "",
-        CMSMimeType = this.CMSMimeType ?? ""
+        FileName = this.FileName,
+        CMSTitle = this.CMSTitle,
+        CMSFolderPath = this.CMSPath,
+        CMSFilePath = this.CMSPath + '/' + this.FileName,
+        CMSMimeType = this.CMSMimeType
     };
 
     public JSON_Content CMSContentJSON => new(

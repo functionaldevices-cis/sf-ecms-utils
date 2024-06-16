@@ -11,14 +11,17 @@ public class CSV_SummarizedCMSFile {
     [Name("CMS Content Key")]
     public string CMSContentKey { get; set; } = "";
 
+    [Name("File Name")]
+    public string FileName { get; set; } = "";
+
     [Name("CMS Title")]
     public string CMSTitle { get; set; } = "";
 
     [Name("CMS Folder Path")]
-    public string CMSPath { get; set; } = "";
+    public string CMSFolderPath { get; set; } = "";
 
-    [Name("File Name")]
-    public string FileName { get; set; } = "";
+    [Name("CMS File Path")]
+    public string CMSFilePath { get; set; } = "";
 
     [Name("MimeType")]
     public string CMSMimeType { get; set; } = "";
