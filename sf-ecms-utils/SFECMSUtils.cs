@@ -179,6 +179,7 @@ public class SFECMSUtils {
 
         CMSFile file = new(
             fileName: Path.GetFileName(filePath),
+            cmsType: "sfdc_cms__document",
             cmsTitle: this.TitleBuilder.GetTitle(
                 defaultTitle: Path.GetFileNameWithoutExtension(filePath),
                 fileName: Path.GetFileName(filePath)
@@ -213,6 +214,7 @@ public class SFECMSUtils {
                 return new CMSFile(
                     fileName: Path.GetFileName(mediaPath),
                     filePath: mediaPath,
+                    cmsType: contentJSON.type,
                     cmsTitle: contentJSON.title,
                     cmsMimeType: contentJSON.contentBody.sfdc_cms_media.source.mimeType,
                     cmsPath: metaJSON.path,

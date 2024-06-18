@@ -9,6 +9,8 @@ public class CMSFile {
 
     public string FilePath { get; init; }
 
+    public string CMSType { get; init; }
+
     public string CMSTitle { get; set; }
 
     public string CMSMimeType { get; init; }
@@ -27,7 +29,7 @@ public class CMSFile {
     };
 
     public JSON_Content CMSContentJSON => new(
-        type: "sfdc_cms__document",
+        type: this.CMSType,
         title: this.CMSTitle,
         contentBody: new(
             sfdc_cms_media: new(
@@ -48,9 +50,10 @@ public class CMSFile {
     /*********************************************** CONSTRUCTOR ***********************************************/
     /***********************************************************************************************************/
 
-    public CMSFile(string fileName, string cmsTitle, string filePath, string cmsPath, string cmsMimeType, string? CMSContentKey = null) {
+    public CMSFile(string fileName, string cmsType, string cmsTitle, string filePath, string cmsPath, string cmsMimeType, string? CMSContentKey = null) {
 
         this.FileName = fileName;
+        this.CMSType = cmsType;
         this.FilePath = filePath;
         this.CMSTitle = cmsTitle;
         this.CMSMimeType = cmsMimeType;
