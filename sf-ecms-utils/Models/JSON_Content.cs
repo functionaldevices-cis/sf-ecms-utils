@@ -20,7 +20,7 @@ public class JSON_Content {
 
     public JSON_Content(string type, string title, JSON_ContentContentBody contentBody) {
 
-        this.type = "sfdc_cms__document";
+        this.type = type;
         this.title = title;
         this.contentBody = contentBody;
 
