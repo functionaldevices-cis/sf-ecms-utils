@@ -11,6 +11,8 @@ The JSON files are created based on the specification provided by Salesforce her
 
 # Configuration
 
+### Required Configuration File In Folder with Executable
+
 You configure the program by filling in the `sf-ecms-utils-config.json` file that comes with the program.
 
 * `Action`
@@ -35,6 +37,18 @@ You configure the program by filling in the `sf-ecms-utils-config.json` file tha
   * **Default**: `False`
   * **Type**: Boolean
   * **Description**: Flag to control whether or not the program creates a zip file after it finishes creating a packaged folder.
+ 
+### Overridding Default Titles and CMS Types
+
+You can override the default CMS Title and CMS Type for single files or entire sub-folders by creating a file named `sfcu_overrides.csv` in the root of the source folder. The structure of the CSV file is as follows:
+
+| CMS Path | CMS Title | CMS Type |
+| -- | -- | -- |
+| Product Photos | [FILENAME] Product Photo |
+| Datasheets | [FILENAME] Datasheet |
+| Diagrams | [FILENAME] Wiring Diagram | sfdc_cms__document |
+| Bulletins | Bulletin |
+| Bulletins/B1622_393193.pdf | Installation Guide |
 
 # Examples
 
