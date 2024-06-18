@@ -2,7 +2,7 @@
 
 namespace SF_ECMS_Utils.Models;
 
-public class CSV_CMSTitleOverride {
+public class CSV_CMSOverride {
 
     /***********************************************************************************************************/
     /********************************************** PROPERTIES *************************************************/
@@ -11,11 +11,11 @@ public class CSV_CMSTitleOverride {
     [Name("CMS Path")]
     public string CMSPath { get; set; } = "";
 
-    [Name("File Name")]
-    public string FileName { get; set; } = "";
-
     [Name("CMS Title")]
     public string CMSTitle { get; set; } = "";
+
+    [Name("CMS Type")]
+    public string CMSType { get; set; } = "";
 
     /***********************************************************************************************************/
     /*********************************************** CONSTRUCTOR ***********************************************/
