@@ -19,6 +19,8 @@ public class SFECMSUtils {
 
     private CMSTitleBuilder TitleBuilder { get; set; }
 
+    private Dictionary<string, CMSFileType> CMSFileTypes { get; set; }
+
     public SFECMSUtils(Config config) {
 
         // PARSE DATA
@@ -26,6 +28,7 @@ public class SFECMSUtils {
         this.Config = config;
         this.FileOutputUtility = new(this.Config.PackagedFiles_FolderPath);
         this.TitleBuilder = new(this.LoadCMSTitleOverrides(this.Config.SourceFiles_FolderPath));
+        this.CMSFileTypes = this.SetupCMSFileTypes();
 
         try {
 
@@ -177,16 +180,19 @@ public class SFECMSUtils {
 
     private CMSFile? ScanRawFilePath(string filePath, string cmsPath) {
 
+
+        CMSFileType fileType = this.GetCMSFileType(Path.GetExtension(filePath));
+
         CMSFile file = new(
             fileName: Path.GetFileName(filePath),
-            cmsType: "sfdc_cms__document",
+            cmsType: fileType.CMSType,
             cmsTitle: this.TitleBuilder.GetTitle(
                 defaultTitle: Path.GetFileNameWithoutExtension(filePath),
                 fileName: Path.GetFileName(filePath)
             ),
             filePath: filePath,
             cmsPath: cmsPath,
-            cmsMimeType: this.ConvertExtensionToMimeType(Path.GetExtension(filePath))
+            cmsMimeType: fileType.MimeType
         );
 
         return file;
@@ -274,90 +280,109 @@ public class SFECMSUtils {
         );
 
     }
+    
+    private CMSFileType GetCMSFileType(string extension) {
 
-    private string ConvertExtensionToMimeType(string extension) {
+        if ( this.CMSFileTypes.ContainsKey(extension)) {
 
-        return extension.ToLower() switch {
-            ".aac" => "audio/aac",
-            ".abw" => "application/x-abiword",
-            ".apng" => "image/apng",
-            ".arc" => "application/x-freearc",
-            ".avif" => "image/avif",
-            ".avi" => "video/x-msvideo",
-            ".azw" => "application/vnd.amazon.ebook",
-            ".bin" => "application/octet-stream",
-            ".bmp" => "image/bmp",
-            ".bz" => "application/x-bzip",
-            ".bz2" => "application/x-bzip2",
-            ".cda" => "application/x-cdf",
-            ".csh" => "application/x-csh",
-            ".css" => "text/css",
-            ".csv" => "text/csv",
-            ".doc" => "application/msword",
-            ".docx" => "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-            ".dwg" => "image/vnd.dwg",
-            ".eot" => "application/vnd.ms-fontobject",
-            ".epub" => "application/epub+zip",
-            ".gz" => "application/gzip",
-            ".gif" => "image/gif",
-            ".htm" => "text/html",
-            ".html" => "text/html",
-            ".ico" => "image/vnd.microsoft.icon",
-            ".ics" => "text/calendar",
-            ".jar" => "application/java-archive",
-            ".jpg" => "image/jpeg",
-            ".jpeg" => "image/jpeg",
-            ".js" => "text/javascript",
-            ".json" => "application/json",
-            ".jsonld" => "application/ld+json",
-            ".mid" => "audio/midi, audio/x-midi",
-            ".midi" => "audio/midi, audio/x-midi",
-            ".mjs" => "text/javascript",
-            ".mp3" => "audio/mpeg",
-            ".mp4" => "video/mp4",
-            ".mpeg" => "video/mpeg",
-            ".mpkg" => "application/vnd.apple.installer+xml",
-            ".odp" => "application/vnd.oasis.opendocument.presentation",
-            ".ods" => "application/vnd.oasis.opendocument.spreadsheet",
-            ".odt" => "application/vnd.oasis.opendocument.text",
-            ".oga" => "audio/ogg",
-            ".ogv" => "video/ogg",
-            ".ogx" => "application/ogg",
-            ".opus" => "audio/opus",
-            ".otf" => "font/otf",
-            ".png" => "image/png",
-            ".pdf" => "application/pdf",
-            ".php" => "application/x-httpd-php",
-            ".ppt" => "application/vnd.ms-powerpoint",
-            ".pptx" => "application/vnd.openxmlformats-officedocument.presentationml.presentation",
-            ".rar" => "application/vnd.rar",
-            ".rtf" => "application/rtf",
-            ".sh" => "application/x-sh",
-            ".svg" => "image/svg+xml",
-            ".tar" => "application/x-tar",
-            ".tif" => "image/tiff",
-            ".tiff" => "image/tiff",
-            ".ts" => "video/mp2t",
-            ".ttf" => "font/ttf",
-            ".txt" => "text/plain",
-            ".vsd" => "application/vnd.visio",
-            ".wav" => "audio/wav",
-            ".weba" => "audio/webm",
-            ".webm" => "video/webm",
-            ".webp" => "image/webp",
-            ".woff" => "font/woff",
-            ".woff2" => "font/woff2",
-            ".xhtml" => "application/xhtml+xml",
-            ".xls" => "application/vnd.ms-excel",
-            ".xlsx" => "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-            ".xml" => "application/xml",
-            ".xul" => "application/vnd.mozilla.xul+xml",
-            ".zip" => "application/zip",
-            ".3gp" => "audio/3gpp",
-            ".3g2" => "audio/3gpp2",
-            ".7z" => "application/x-7z-compressed",
-            _ => "application/octet-stream"
-        };
+            return this.CMSFileTypes[extension];
+
+        } else {
+
+            return this.CMSFileTypes[""];
+
+        }
+
+    }
+
+    private Dictionary<string, CMSFileType> SetupCMSFileTypes() {
+
+        List<CMSFileType> fileTypes = [
+            new(".aac", "sfdc_cms__document", "audio/aac" ),
+            new(".abw", "sfdc_cms__document", "application/x-abiword" ),
+            new(".apng", "sfdc_cms__document", "image/apng" ),
+            new(".arc", "sfdc_cms__document", "application/x-freearc" ),
+            new(".avif", "sfdc_cms__document", "image/avif" ),
+            new(".avi", "sfdc_cms__document", "video/x-msvideo" ),
+            new(".azw", "sfdc_cms__document", "application/vnd.amazon.ebook" ),
+            new(".bin", "sfdc_cms__document", "application/octet-stream" ),
+            new(".bmp", "sfdc_cms__document", "image/bmp" ),
+            new(".bz", "sfdc_cms__document", "application/x-bzip" ),
+            new(".bz2", "sfdc_cms__document", "application/x-bzip2" ),
+            new(".cda", "sfdc_cms__document", "application/x-cdf" ),
+            new(".csh", "sfdc_cms__document", "application/x-csh" ),
+            new(".css", "sfdc_cms__document", "text/css" ),
+            new(".csv", "sfdc_cms__document", "text/csv" ),
+            new(".doc", "sfdc_cms__document", "application/msword" ),
+            new(".docx", "sfdc_cms__document", "application/vnd.openxmlformats-officedocument.wordprocessingml.document" ),
+            new(".dwg", "sfdc_cms__document", "image/vnd.dwg" ),
+            new(".eot", "sfdc_cms__document", "application/vnd.ms-fontobject" ),
+            new(".epub", "sfdc_cms__document", "application/epub+zip" ),
+            new(".gz", "sfdc_cms__document", "application/gzip" ),
+            new(".gif", "sfdc_cms__document", "image/gif" ),
+            new(".htm", "sfdc_cms__document", "text/html" ),
+            new(".html", "sfdc_cms__document", "text/html" ),
+            new(".ico", "sfdc_cms__document", "image/vnd.microsoft.icon" ),
+            new(".ics", "sfdc_cms__document", "text/calendar" ),
+            new(".jar", "sfdc_cms__document", "application/java-archive" ),
+            new(".jpg", "sfdc_cms__document", "image/jpeg" ),
+            new(".jpeg", "sfdc_cms__document", "image/jpeg" ),
+            new(".js", "sfdc_cms__document", "text/javascript" ),
+            new(".json", "sfdc_cms__document", "application/json" ),
+            new(".jsonld", "sfdc_cms__document", "application/ld+json" ),
+            new(".mid", "sfdc_cms__document", "audio/midi, audio/x-midi" ),
+            new(".midi", "sfdc_cms__document", "audio/midi, audio/x-midi" ),
+            new(".mjs", "sfdc_cms__document", "text/javascript" ),
+            new(".mp3", "sfdc_cms__document", "audio/mpeg" ),
+            new(".mp4", "sfdc_cms__document", "video/mp4" ),
+            new(".mpeg", "sfdc_cms__document", "video/mpeg" ),
+            new(".mpkg", "sfdc_cms__document", "application/vnd.apple.installer+xml" ),
+            new(".odp", "sfdc_cms__document", "application/vnd.oasis.opendocument.presentation" ),
+            new(".ods", "sfdc_cms__document", "application/vnd.oasis.opendocument.spreadsheet" ),
+            new(".odt", "sfdc_cms__document", "application/vnd.oasis.opendocument.text" ),
+            new(".oga", "sfdc_cms__document", "audio/ogg" ),
+            new(".ogv", "sfdc_cms__document", "video/ogg" ),
+            new(".ogx", "sfdc_cms__document", "application/ogg" ),
+            new(".opus", "sfdc_cms__document", "audio/opus" ),
+            new(".otf", "sfdc_cms__document", "font/otf" ),
+            new(".png", "sfdc_cms__document", "image/png" ),
+            new(".pdf", "sfdc_cms__document", "application/pdf" ),
+            new(".php", "sfdc_cms__document", "application/x-httpd-php" ),
+            new(".ppt", "sfdc_cms__document", "application/vnd.ms-powerpoint" ),
+            new(".pptx", "sfdc_cms__document", "application/vnd.openxmlformats-officedocument.presentationml.presentation" ),
+            new(".rar", "sfdc_cms__document", "application/vnd.rar" ),
+            new(".rtf", "sfdc_cms__document", "application/rtf" ),
+            new(".sh", "sfdc_cms__document", "application/x-sh" ),
+            new(".svg", "sfdc_cms__document", "image/svg+xml" ),
+            new(".tar", "sfdc_cms__document", "application/x-tar" ),
+            new(".tif", "sfdc_cms__document", "image/tiff" ),
+            new(".tiff", "sfdc_cms__document", "image/tiff" ),
+            new(".ts", "sfdc_cms__document", "video/mp2t" ),
+            new(".ttf", "sfdc_cms__document", "font/ttf" ),
+            new(".txt", "sfdc_cms__document", "text/plain" ),
+            new(".vsd", "sfdc_cms__document", "application/vnd.visio" ),
+            new(".wav", "sfdc_cms__document", "audio/wav" ),
+            new(".weba", "sfdc_cms__document", "audio/webm" ),
+            new(".webm", "sfdc_cms__document", "video/webm" ),
+            new(".webp", "sfdc_cms__document", "image/webp" ),
+            new(".woff", "sfdc_cms__document", "font/woff" ),
+            new(".woff2", "sfdc_cms__document", "font/woff2" ),
+            new(".xhtml", "sfdc_cms__document", "application/xhtml+xml" ),
+            new(".xls", "sfdc_cms__document", "application/vnd.ms-excel" ),
+            new(".xlsx", "sfdc_cms__document", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" ),
+            new(".xml", "sfdc_cms__document", "application/xml" ),
+            new(".xul", "sfdc_cms__document", "application/vnd.mozilla.xul+xml" ),
+            new(".zip", "sfdc_cms__document", "application/zip" ),
+            new(".3gp", "sfdc_cms__document", "audio/3gpp" ),
+            new(".3g2", "sfdc_cms__document", "audio/3gpp2" ),
+            new(".7z", "sfdc_cms__document", "application/x-7z-compressed" ),
+            new("", "sfdc_cms__document", "application/octet-stream" )
+        ];
+
+        return fileTypes.ToDictionary(
+            t => t.Extension,
+            t => t
+        );
 
     }
 
