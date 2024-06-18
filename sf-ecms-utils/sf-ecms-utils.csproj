@@ -18,7 +18,7 @@
     <PublishTrimmed>True</PublishTrimmed>
     <Title>SF Import Builder</Title>
     <AssemblyVersion>3.0.0</AssemblyVersion>
-    <FileVersion>2.1.1</FileVersion>
+    <FileVersion>3.0.0</FileVersion>
     <ApplicationIcon>icon.ico</ApplicationIcon>
     <PackageIcon>icon.png</PackageIcon>
   </PropertyGroup>
