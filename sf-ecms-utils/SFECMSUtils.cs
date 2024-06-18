@@ -17,18 +17,22 @@ public class SFECMSUtils {
 
     private FileOutputUtility FileOutputUtility { get; set; }
 
-    private CMSTitleBuilder TitleBuilder { get; set; }
+    private Dictionary<string, CMSFileType> CMSFileTypes { get; set; } = [];
 
-    private Dictionary<string, CMSFileType> CMSFileTypes { get; set; }
+    private Dictionary<string, CSV_CMSOverride> CMSOverrides { get; set; } = [];
 
     public SFECMSUtils(Config config) {
 
         // PARSE DATA
 
         this.Config = config;
-        this.FileOutputUtility = new(this.Config.PackagedFiles_FolderPath);
-        this.TitleBuilder = new(this.LoadCMSTitleOverrides(this.Config.SourceFiles_FolderPath));
-        this.CMSFileTypes = this.SetupCMSFileTypes();
+        this.FileOutputUtility = new(
+            rootFolder: this.Config.PackagedFiles_FolderPath
+        );
+        this.CMSFileTypes = this.LoadCMSFileTypes();
+        this.CMSOverrides = this.LoadCMSOverrides(
+            directoryPath: this.Config.SourceFiles_FolderPath
+        );
 
         try {
 
@@ -94,24 +98,6 @@ public class SFECMSUtils {
 
     }
 
-    private List<CSV_CMSTitleOverride> LoadCMSTitleOverrides(string directoryPath) {
-
-        try {
-
-            if (File.Exists(Path.Combine(directoryPath, "sfc_titles.csv"))) {
-                StreamReader reader = new(Path.Combine(directoryPath, "sfc_titles.csv"));
-                CsvReader csv = new(reader, CultureInfo.InvariantCulture);
-                return csv.GetRecords<CSV_CMSTitleOverride>().ToList();
-            }
-
-        } catch (Exception ex) {
-
-        }
-
-        return [];
-
-    }
-
     private CMSDirectory ScanDirectory(string directoryPath, string rootPath, bool isFormatted) {
 
         CMSDirectory directory = new(
@@ -134,8 +120,7 @@ public class SFECMSUtils {
         } else {
 
             subDirectoryPaths = Directory.GetDirectories(directory.DirectoryPath).ToList();
-            filePaths = Directory.GetFiles(directory.DirectoryPath, "*.*", SearchOption.TopDirectoryOnly).ToList().Where(filePaths => Path.GetFileName(filePaths) != "sfc_titles.csv").ToList();
-            this.TitleBuilder.SetCMSPath(directory.CMSPath);
+            filePaths = Directory.GetFiles(directory.DirectoryPath, "*.*", SearchOption.TopDirectoryOnly).ToList().Where(filePaths => Path.GetFileName(filePaths) != "sfcu_overrides.csv").ToList();
 
         }
 
@@ -180,16 +165,29 @@ public class SFECMSUtils {
 
     private CMSFile? ScanRawFilePath(string filePath, string cmsPath) {
 
-
+        string fileName = Path.GetFileName(filePath);
         CMSFileType fileType = this.GetCMSFileType(Path.GetExtension(filePath));
+        CSV_CMSOverride? overRide = this.GetCMSOverride(cmsPath, fileName);
+
+        string extension = Path.GetExtension(filePath);
+        if (cmsPath == "Product Photos") {
+
+        }
+
+        // APPLY OVERRIDES
+
+        string cmsTitle = Path.GetFileNameWithoutExtension(filePath);
+        string cmsType = fileType.CMSType;
+
+        if ( overRide != null ) {
+            cmsTitle = ( overRide.CMSTitle != "" ? overRide.CMSTitle.Replace("[FILENAME]", cmsTitle) : cmsTitle);
+            cmsType = (overRide.CMSType != "" ? overRide.CMSType : cmsType);
+        }
 
         CMSFile file = new(
-            fileName: Path.GetFileName(filePath),
-            cmsType: fileType.CMSType,
-            cmsTitle: this.TitleBuilder.GetTitle(
-                defaultTitle: Path.GetFileNameWithoutExtension(filePath),
-                fileName: Path.GetFileName(filePath)
-            ),
+            fileName: fileName,
+            cmsType: cmsType,
+            cmsTitle: cmsTitle,
             filePath: filePath,
             cmsPath: cmsPath,
             cmsMimeType: fileType.MimeType
@@ -295,7 +293,7 @@ public class SFECMSUtils {
 
     }
 
-    private Dictionary<string, CMSFileType> SetupCMSFileTypes() {
+    private Dictionary<string, CMSFileType> LoadCMSFileTypes() {
 
         List<CMSFileType> fileTypes = [
             new(".aac", "sfdc_cms__document", "audio/aac" ),
@@ -383,6 +381,68 @@ public class SFECMSUtils {
             t => t.Extension,
             t => t
         );
+
+    }
+
+    private CSV_CMSOverride? GetCMSOverride(string cmsFolderPath, string fileName) {
+
+        string cmsFilePath = cmsFolderPath + "/" + fileName;
+
+        if (this.CMSOverrides.ContainsKey(cmsFilePath)) {
+
+            return this.CMSOverrides[cmsFilePath];
+
+        } else if (this.CMSOverrides.ContainsKey(cmsFolderPath)) {
+
+            return this.CMSOverrides[cmsFolderPath];
+
+        } else {
+
+            return null;
+
+        }
+
+    }
+
+    private Dictionary<string, CSV_CMSOverride> LoadCMSOverrides(string directoryPath) {
+
+        List<CSV_CMSOverride> overrides = [];
+
+        // IF AN OVERRIDE FILE EXISTS
+
+        if (File.Exists(Path.Combine(directoryPath, "sfcu_overrides.csv"))) {
+
+            // TRY TO OPEN AND PARSE IT
+
+            try {
+
+                StreamReader reader = new(Path.Combine(directoryPath, "sfcu_overrides.csv"));
+                CsvReader csv = new(reader, CultureInfo.InvariantCulture);
+                overrides = csv.GetRecords<CSV_CMSOverride>().ToList();
+
+                return overrides.ToDictionary(
+                    t => t.CMSPath,
+                    t => t
+                );
+
+            } catch (Exception ex) {
+
+                string accessError = "The process cannot access the file";
+                string duplicateError = "An item with the same key has already been added. Key: ";
+
+                if (ex.Message.StartsWith(accessError)) {
+                    Console.WriteLine("Error: There appears to be an override file, but it can't be opened. The process will continue without using it.");
+                } else if (ex.Message.StartsWith(duplicateError)) {
+                    Console.WriteLine($"Error: The override file has a duplicate CMSPath: {ex.Message.Replace(duplicateError, "")}. This process will continue without using it.");
+                } else {
+                    Console.WriteLine(ex.Message);
+                }
+
+            }
+
+        }
+
+        return [];
 
     }
 
