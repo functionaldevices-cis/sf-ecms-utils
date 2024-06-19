@@ -20,10 +20,11 @@ public class CMSFile {
     public string CMSPath { get; init; }
 
     public CSV_SummarizedCMSFile SummarizedValues => new() {
+        CMSType = this.CMSType,
         CMSContentKey = this.CMSContentKey ?? "",
-        FileName = this.FileName,
         CMSTitle = this.CMSTitle,
         CMSFolderPath = this.CMSPath,
+        FileName = this.FileName,
         CMSFilePath = this.CMSPath + '/' + this.FileName,
         CMSMimeType = this.CMSMimeType
     };
