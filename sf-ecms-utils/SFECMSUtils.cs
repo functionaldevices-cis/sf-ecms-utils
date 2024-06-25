@@ -78,13 +78,15 @@ public class SFECMSUtils {
                     this.MoveAll(oldPath, newPath);
                 }
 
-                // ANALYZE
+                // SCAN THE DIRECTORY AND BUILD A LIST OF WHAT FOLDERS AND FILES NEED TO BE PROCESSED
 
                 CMSDirectory directory = this.ScanDirectory(
                     directoryPath: this.Config.PackagedFiles_FolderPath,
                     rootPath: this.Config.PackagedFiles_FolderPath,
                     isFormatted: true
                 );
+
+                // PROCESS THE DIRECTORY
 
                 this.CreateSummary(directory.GetAllFiles());
 
