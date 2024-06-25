@@ -51,9 +51,9 @@ public class SFECMSUtils {
                 this.PackageFiles(directory.GetAllFiles());
                 this.CreateSummary(directory.GetAllFiles());
 
-                // CREATE ZIP FILE
+                // CREATE ZIP FILE(S)
 
-                if (this.Config.CreateZipFile) {
+                if (this.Config.CreateZipFiles) {
 
                     ZipFile.CreateFromDirectory(Path.Combine(this.Config.PackagedFiles_FolderPath, "Packaged Files"), Path.Combine(this.Config.PackagedFiles_FolderPath, "Packaged File.zip"));
 
