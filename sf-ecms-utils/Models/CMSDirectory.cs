@@ -13,6 +13,7 @@ public class CMSDirectory {
     public string CMSPath { get; init; }
     public List<CMSDirectory> SubDirectories { get; init; }
     public List<CMSFile> Files { get; init; }
+    public int Level => this.CMSPath == "" ? 0 : ( this.CMSPath.Split('/').Length );
 
 
 
@@ -49,6 +50,32 @@ public class CMSDirectory {
         });
 
         return files;
+
+    }
+
+    public List<CMSDirectory> GetAllDirectories () {
+
+        // GET THE FILES THAT ARE DIRECTLY IN THIS DIRECTORY
+
+        List<CMSDirectory> directories = [ this ];
+
+        directories.AddRange(this.SubDirectories);
+
+        // LOOP THROUGH THE SUBDIRECTORIES AND GET EACH
+
+        this.SubDirectories.ForEach(subDirectory => {
+            directories.AddRange(subDirectory.GetAllDirectories());
+        });
+
+        return directories;
+
+    }
+
+    public List<CMSDirectory> GetAllDirectoriesAtLevel(int level) {
+
+        // GET THE FILES THAT ARE AT A SPECIFIED LEVEL
+
+        return this.GetAllDirectories().Where(directory => directory.Level == level).ToList();
 
     }
 
