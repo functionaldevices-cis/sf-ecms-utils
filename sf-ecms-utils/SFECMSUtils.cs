@@ -55,7 +55,12 @@ public class SFECMSUtils {
 
                 if (this.Config.CreateZipFiles) {
 
-                    ZipFile.CreateFromDirectory(Path.Combine(this.Config.PackagedFiles_FolderPath, "Packaged Files"), Path.Combine(this.Config.PackagedFiles_FolderPath, "Packaged File.zip"));
+                    directory.GetAllDirectoriesAtLevel(this.Config.ZipFileSplitLevel).ForEach(directory => {
+
+                        string pathOfFolderToZip = directory.DirectoryPath.Replace(this.Config.SourceFiles_FolderPath, Path.Combine(this.Config.PackagedFiles_FolderPath, "Packaged Files"));
+                        ZipFile.CreateFromDirectory(pathOfFolderToZip, pathOfFolderToZip + ".zip");
+
+                    });
 
                 }
 
@@ -81,8 +86,8 @@ public class SFECMSUtils {
                 // SCAN THE DIRECTORY AND BUILD A LIST OF WHAT FOLDERS AND FILES NEED TO BE PROCESSED
 
                 CMSDirectory directory = this.ScanDirectory(
-                    directoryPath: this.Config.PackagedFiles_FolderPath,
-                    rootPath: this.Config.PackagedFiles_FolderPath,
+                    directoryPath: Path.Combine(this.Config.PackagedFiles_FolderPath, "Packaged Files"),
+                    rootPath: Path.Combine(this.Config.PackagedFiles_FolderPath, "Packaged Files"),
                     isPackaged: true
                 );
 

@@ -24,7 +24,7 @@ public class Config {
     /*********************************************** CONSTRUCTOR ***********************************************/
     /***********************************************************************************************************/
 
-    public Config(string Action, string? SourceFiles_FolderPath = null, string? PackagedFiles_ZipFilePath = null, string? PackagedFiles_FolderPath = null, bool CreateZipFiles = false, int ZipFileSplitLevel = 1) {
+    public Config(string Action, string? SourceFiles_FolderPath = null, string? PackagedFiles_ZipFilePath = null, string? PackagedFiles_FolderPath = null, bool CreateZipFiles = false, int ZipFileSplitLevel = 0) {
 
         this.Action = Action == "PackageFiles" ? "PackageFiles" : "AnalyzeFiles";
         this.SourceFiles_FolderPath = SourceFiles_FolderPath ?? "";
