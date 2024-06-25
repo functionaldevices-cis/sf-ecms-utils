@@ -3,6 +3,6 @@
     "SourceFiles_FolderPath": "",
     "PackagedFiles_ZipFilePath": "",
     "PackagedFiles_FolderPath": "",
-    "CreateZipFiles": false,
-    "ZipFileSplitLevel": 1
+    "CreateZipFiles": true,
+    "ZipFileSplitLevel": 0
 }
