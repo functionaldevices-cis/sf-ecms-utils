@@ -43,7 +43,7 @@ public class SFECMSUtils {
                 CMSDirectory directory = this.ScanDirectory(
                     directoryPath: this.Config.SourceFiles_FolderPath,
                     rootPath: this.Config.SourceFiles_FolderPath,
-                    isFormatted: false
+                    isPackaged: false
                 );
 
                 // PROCESS THE DIRECTORY
@@ -83,7 +83,7 @@ public class SFECMSUtils {
                 CMSDirectory directory = this.ScanDirectory(
                     directoryPath: this.Config.PackagedFiles_FolderPath,
                     rootPath: this.Config.PackagedFiles_FolderPath,
-                    isFormatted: true
+                    isPackaged: true
                 );
 
                 // PROCESS THE DIRECTORY
@@ -100,7 +100,7 @@ public class SFECMSUtils {
 
     }
 
-    private CMSDirectory ScanDirectory(string directoryPath, string rootPath, bool isFormatted) {
+    private CMSDirectory ScanDirectory(string directoryPath, string rootPath, bool isPackaged) {
 
         CMSDirectory directory = new(
             directoryName: Path.GetFileName(directoryPath) ?? "",
@@ -114,7 +114,7 @@ public class SFECMSUtils {
 
         // LOAD A LIST OF ALL SUBFOLDERS AND FILES
 
-        if (isFormatted) {
+        if (isPackaged) {
 
             subDirectoryPaths = Directory.GetDirectories(directory.DirectoryPath).Where(subDirectoryPath => !this.IsDirectoryACMSFile(subDirectoryPath)).ToList();
             filePaths = Directory.GetDirectories(directory.DirectoryPath).Where(subDirectoryPath => this.IsDirectoryACMSFile(subDirectoryPath)).ToList();
@@ -130,7 +130,7 @@ public class SFECMSUtils {
 
         filePaths.ForEach(filePath => {
 
-            if (isFormatted) {
+            if (isPackaged) {
                 file = ScanPackagedFileDirectoryPath(
                     filePath: filePath
                 );
@@ -155,7 +155,7 @@ public class SFECMSUtils {
                 this.ScanDirectory(
                     directoryPath: subDirectoryPath,
                     rootPath: rootPath,
-                    isFormatted: isFormatted
+                    isPackaged: isPackaged
                 )
             );
 
