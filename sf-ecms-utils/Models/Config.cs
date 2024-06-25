@@ -24,24 +24,13 @@ public class Config {
     /*********************************************** CONSTRUCTOR ***********************************************/
     /***********************************************************************************************************/
 
-    public Config(string Action, string? SourceFiles_FolderPath = null, string? PackagedFiles_ZipFilePath = null, string? PackagedFiles_FolderPath = null, bool? CreateZipFile = null, bool? CreateZipFiles = null, int ZipFileSplitLevel = 1) {
+    public Config(string Action, string? SourceFiles_FolderPath = null, string? PackagedFiles_ZipFilePath = null, string? PackagedFiles_FolderPath = null, bool CreateZipFiles = false, int ZipFileSplitLevel = 1) {
 
         this.Action = Action == "PackageFiles" ? "PackageFiles" : "AnalyzeFiles";
         this.SourceFiles_FolderPath = SourceFiles_FolderPath ?? "";
         this.PackagedFiles_ZipFilePath = PackagedFiles_ZipFilePath;
         this.PackagedFiles_FolderPath = PackagedFiles_FolderPath ?? "";
-        
-        // ADD TEMPORARY PARSING OF BOTH NEW AND OLD CONFIG PARAMETER, AND GIVE A DEPRECIATION WARNING FOR THE OLD ONE.
-
-        if (CreateZipFiles != null) {
-            this.CreateZipFiles = (bool)CreateZipFiles;
-        } else if (CreateZipFile != null) {
-            this.CreateZipFiles = (bool)CreateZipFile;
-            Console.WriteLine("Warning, you are using the depreciated 'CreateZipFile' config parameter. Please replace this with 'CreateZipFiles' before upgrading to the next major version.");
-        } else {
-            this.CreateZipFiles = false;
-        }
-
+        this.CreateZipFiles = CreateZipFiles;
         this.ZipFileSplitLevel = ZipFileSplitLevel;
 
         // VALIDATE THE CONFIG FILE
