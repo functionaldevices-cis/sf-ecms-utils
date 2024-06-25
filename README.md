@@ -32,11 +32,16 @@ You configure the program by filling in the `sf-ecms-utils-config.json` file tha
   * **Default**: `True`
   * **Type**: Boolean
   * **Description**: Flag to control whether or not the program makes a ZIP package after it creates the new folder structure and files in the output folder.
-* `CreateZipFile`
+* `CreateZipFiles`
   * **Required**: `False`
   * **Default**: `False`
   * **Type**: Boolean
   * **Description**: Flag to control whether or not the program creates a zip file after it finishes creating a packaged folder.
+* `ZipFileSplitLevel`
+  * **Required**: `False`
+  * **Default**: 0
+  * **Type**: Integer
+  * **Description**: Determines which level of nested folders will be zipped. By default, `0` will cause the entire "Packaged Files" folder to be zipped into a single "Packaged Files.zip" file. `1` will cause all folders directly within "Packaged Files" to be zipped. This is useful if a single zip file would be too large for Salesforce to import, or if different subfolders contain files with the same filename, which can cause import errors.
  
 ### Overridding Default Titles and CMS Types
 
