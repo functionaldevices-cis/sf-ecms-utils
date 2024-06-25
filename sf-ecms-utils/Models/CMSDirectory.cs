@@ -36,13 +36,13 @@ public class CMSDirectory {
 
     public List<CMSFile> GetAllFiles () {
 
-        // PROCESS THE FILES THAT ARE DIRECTLY IN THIS DIRECTORY
+        // GET THE FILES THAT ARE DIRECTLY IN THIS DIRECTORY
 
         List<CMSFile> files = [];
         
         files.AddRange(this.Files);
 
-        // LOOP THROUGH THE SUBDIRECTORIES AND PROCESS EACH ONE
+        // LOOP THROUGH THE SUBDIRECTORIES AND GET EACH
 
         this.SubDirectories.ForEach(subDirectory => {
             files.AddRange(subDirectory.GetAllFiles());
