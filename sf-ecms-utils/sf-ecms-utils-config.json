@@ -1,8 +1,5 @@
 {
-    "Action": "AnalyzeFiles",
-    "SourceFiles_FolderPath": "",
-    "PackagedFiles_ZipFilePath": "",
-    "PackagedFiles_FolderPath": "",
-    "CreateZipFiles": true,
-    "ZipFileSplitLevel": 0
+    "Action": "PackageBlogPosts",
+    "SourceBlogPosts_FilePath": "C:\\Users\\AndyMercer\\Downloads\\hubspot_import.csv",
+    "PackagedFiles_FolderPath": "C:\\Users\\AndyMercer\\Downloads\\import-package-v2"
 }

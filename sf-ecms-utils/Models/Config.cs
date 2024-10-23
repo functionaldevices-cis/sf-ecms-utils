@@ -19,64 +19,84 @@ public class Config {
     public string PackagedFiles_FolderPath { get; set; }
     public bool CreateZipFiles { get; set; }
     public int ZipFileSplitLevel { get; set; }
+    public string SourceBlogPosts_FilePath { get; set; }
 
     /***********************************************************************************************************/
     /*********************************************** CONSTRUCTOR ***********************************************/
     /***********************************************************************************************************/
 
-    public Config(string Action, string? SourceFiles_FolderPath = null, string? PackagedFiles_ZipFilePath = null, string? PackagedFiles_FolderPath = null, bool CreateZipFiles = false, int ZipFileSplitLevel = 0) {
+    public Config(string Action, string? SourceFiles_FolderPath = null, string? PackagedFiles_ZipFilePath = null, string? PackagedFiles_FolderPath = null, bool CreateZipFiles = false, int ZipFileSplitLevel = 0, string? SourceBlogPosts_FilePath = null) {
 
-        this.Action = Action == "PackageFiles" ? "PackageFiles" : "AnalyzeFiles";
+        List<string> actions = ["AnalyzeFiles", "PackageFiles", "PackageBlogPosts"];
+
+        this.Action = actions.Contains(Action) ? Action : "";
         this.SourceFiles_FolderPath = SourceFiles_FolderPath ?? "";
         this.PackagedFiles_ZipFilePath = PackagedFiles_ZipFilePath;
         this.PackagedFiles_FolderPath = PackagedFiles_FolderPath ?? "";
         this.CreateZipFiles = CreateZipFiles;
         this.ZipFileSplitLevel = ZipFileSplitLevel;
+        this.SourceBlogPosts_FilePath = SourceBlogPosts_FilePath ?? "";
 
         // VALIDATE THE CONFIG FILE
 
-        if (this.Action == "AnalyzeFiles") {
+        switch(this.Action) {
 
-            // IF WE HAVE A VALID ZIP FILE
+            case "AnalyzeFiles":
 
-            if (PackagedFiles_ZipFilePath != null && File.Exists(PackagedFiles_ZipFilePath)) {
+                // IF WE HAVE A VALID ZIP FILE
 
-                this.PackagedFiles_ZipFilePath = PackagedFiles_ZipFilePath;
-                this.PackagedFiles_FolderPath = Path.GetDirectoryName(this.PackagedFiles_ZipFilePath) ?? "";
+                if (PackagedFiles_ZipFilePath != null && File.Exists(PackagedFiles_ZipFilePath)) {
 
-            } else if (PackagedFiles_FolderPath != null && Directory.Exists(PackagedFiles_FolderPath)) {
+                    this.PackagedFiles_ZipFilePath = PackagedFiles_ZipFilePath;
+                    this.PackagedFiles_FolderPath = Path.GetDirectoryName(this.PackagedFiles_ZipFilePath) ?? "";
 
-                this.PackagedFiles_FolderPath = PackagedFiles_FolderPath;
+                } else if (PackagedFiles_FolderPath != null && Directory.Exists(PackagedFiles_FolderPath)) {
 
-            } else {
+                    this.PackagedFiles_FolderPath = PackagedFiles_FolderPath;
 
-                throw new Exception("Error, when taking an action of 'AnalyzeFiles', the config needs to contain either a valid 'PackagedFiles_ZipFilePath' or 'PackagedFiles_FolderPath'.");
+                } else {
 
-            }
-
-        } else {
-
-            if (SourceFiles_FolderPath == null || PackagedFiles_FolderPath == null) {
-
-                throw new Exception("Error, when taking an action of 'PackageFiles', the config needs to contain both 'SourceFiles_FolderPath' and 'PackagedFiles_FolderPath'.");
-
-            } else {
-
-                if (!Directory.Exists(this.SourceFiles_FolderPath)) {
-
-                    throw new Exception("Error, the 'SourceFiles_FolderPath' file path is invalid.");
+                    throw new Exception("Error, when taking an action of 'AnalyzeFiles', the config needs to contain either a valid 'PackagedFiles_ZipFilePath' or 'PackagedFiles_FolderPath'.");
 
                 }
 
-                if (!Directory.Exists(this.PackagedFiles_FolderPath)) {
+                break;
 
-                    Directory.CreateDirectory(this.SourceFiles_FolderPath);
+            case "PackageFiles":
+
+                if (SourceFiles_FolderPath == null || PackagedFiles_FolderPath == null) {
+
+                    throw new Exception("Error, when taking an action of 'PackageFiles', the config needs to contain both 'SourceFiles_FolderPath' and 'PackagedFiles_FolderPath'.");
+
+                } else {
+
+                    if (!Directory.Exists(this.SourceFiles_FolderPath)) {
+
+                        throw new Exception("Error, the 'SourceFiles_FolderPath' file path is invalid.");
+
+                    }
+
+                    if (!Directory.Exists(this.PackagedFiles_FolderPath)) {
+
+                        Directory.CreateDirectory(this.SourceFiles_FolderPath);
+
+                    }
 
                 }
 
-            }
+                break;
 
-        }
+            case "PackageBlogPosts":
+
+
+
+                break;
+
+            default:
+
+                throw new Exception($"Error, the action {Action} is invalid.");
+
+        };
 
     }
 

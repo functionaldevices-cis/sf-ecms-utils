@@ -9,6 +9,7 @@ using System.IO.Compression;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Text.Json;
+using System.Text.Encodings.Web;
 
 namespace SF_ECMS_Utils;
 public class SFECMSUtils {
@@ -34,66 +35,137 @@ public class SFECMSUtils {
             directoryPath: this.Config.SourceFiles_FolderPath
         );
 
+        CMSDirectory directory;
+        List<string> subDirectoryPaths;
+
         try {
 
-            if (this.Config.Action == "PackageFiles") {      
+            switch (this.Config.Action) {
 
-                // SCAN THE DIRECTORY AND BUILD A LIST OF WHAT FOLDERS AND FILES NEED TO BE PROCESSED
+                case "PackageFiles": 
 
-                CMSDirectory directory = this.ScanDirectory(
-                    directoryPath: this.Config.SourceFiles_FolderPath,
-                    rootPath: this.Config.SourceFiles_FolderPath,
-                    isPackaged: false
-                );
+                    // SCAN THE DIRECTORY AND BUILD A LIST OF WHAT FOLDERS AND FILES NEED TO BE PROCESSED
 
-                // PROCESS THE DIRECTORY
+                    directory = this.ScanDirectory(
+                        directoryPath: this.Config.SourceFiles_FolderPath,
+                        rootPath: this.Config.SourceFiles_FolderPath,
+                        isPackaged: false
+                    );
 
-                this.PackageFiles(directory.GetAllFiles());
-                this.CreateSummary(directory.GetAllFiles());
+                    // PROCESS THE DIRECTORY
 
-                // CREATE ZIP FILE(S)
+                    this.PackageFiles(directory.GetAllFiles());
+                    this.CreateSummary(directory.GetAllFiles());
 
-                if (this.Config.CreateZipFiles) {
+                    // CREATE ZIP FILE(S)
 
-                    directory.GetAllDirectoriesAtLevel(this.Config.ZipFileSplitLevel).ForEach(directory => {
+                    if (this.Config.CreateZipFiles) {
 
-                        string pathOfFolderToZip = directory.DirectoryPath.Replace(this.Config.SourceFiles_FolderPath, Path.Combine(this.Config.PackagedFiles_FolderPath, "Packaged Files"));
-                        ZipFile.CreateFromDirectory(pathOfFolderToZip, pathOfFolderToZip + ".zip");
+                        directory.GetAllDirectoriesAtLevel(this.Config.ZipFileSplitLevel).ForEach(directory => {
 
-                    });
+                            string pathOfFolderToZip = directory.DirectoryPath.Replace(this.Config.SourceFiles_FolderPath, Path.Combine(this.Config.PackagedFiles_FolderPath, "Packaged Files"));
+                            ZipFile.CreateFromDirectory(pathOfFolderToZip, pathOfFolderToZip + ".zip");
 
-                }
+                        });
 
-            } else {
+                    }
 
-                // UNZIP IF SPECIFIED
+                    break;
 
-                if (this.Config.PackagedFiles_ZipFilePath != null) {
+                case "PackageBlogPosts":
 
-                    ZipFile.ExtractToDirectory(this.Config.PackagedFiles_ZipFilePath, Path.Combine(this.Config.PackagedFiles_FolderPath, "Packaged Files"));
 
-                }
 
-                // MOVE ALL FILES INTO A NESTED "Packaged Files" FOLDER IF NOT ALREADY DONE
+                    /*
 
-                List<string> subDirectoryPaths = Directory.GetDirectories(this.Config.PackagedFiles_FolderPath).ToList();
-                if (subDirectoryPaths.Count == 0 || Path.GetFileName(subDirectoryPaths[0]) != "Packaged Files") {
-                    string oldPath = this.Config.PackagedFiles_FolderPath;
-                    string newPath = Path.Combine(this.Config.PackagedFiles_FolderPath, "Packaged Files");
-                    this.MoveAll(oldPath, newPath);
-                }
+                    StreamReader reader = new(this.Config.SourceBlogPosts_FilePath);
+                    CsvReader csv = new(reader, CultureInfo.InvariantCulture);
 
-                // SCAN THE DIRECTORY AND BUILD A LIST OF WHAT FOLDERS AND FILES NEED TO BE PROCESSED
+                    List<CMSBlogPost> posts = csv.GetRecords<CSV_BlogPost>().Select(record => {
+                        return new CMSBlogPost(
+                            ID: record.ID,
+                            ContentKey: record.CMSContentKey,
+                            Type: record.Type,
+                            Title: record.Title,
+                            AuthorName: record.AuthorName,
+                            Body: record.Body,
+                            Category: record.Category,
+                            Excerpt: record.Excerpt,
+                            Image_URL: record.Image_URL,
+                            Status: record.Status,
+                            DateTime: record.DateTime,
+                            TimeZone: record.TimeZone,
+                            OldURL: record.OldURL
+                        );
+                    }).ToList();
+                        
+                    this.PackageBlogPosts(posts);
 
-                CMSDirectory directory = this.ScanDirectory(
-                    directoryPath: Path.Combine(this.Config.PackagedFiles_FolderPath, "Packaged Files"),
-                    rootPath: Path.Combine(this.Config.PackagedFiles_FolderPath, "Packaged Files"),
-                    isPackaged: true
-                );
+                    */
 
-                // PROCESS THE DIRECTORY
+                    List<CSV_HubspotBlogPost> posts = [];
 
-                this.CreateSummary(directory.GetAllFiles());
+                    foreach (string monthFolderPath in Directory.GetDirectories(this.Config.PackagedFiles_FolderPath)) {
+
+                        foreach (string postFolderPath in Directory.GetDirectories(monthFolderPath)) {
+
+                            string postFilePath = Path.Combine(postFolderPath, "content.json");
+                            string postFileContents = File.ReadAllText(postFilePath);
+                            JSON_Content_BlogPost post = JsonSerializer.Deserialize(postFileContents, JSON_Content_BlogPostContext.Default.JSON_Content_BlogPost) ?? throw new Exception("Error, unable to parse the config file. Please check that the file exists and has correctly formatted JSON data.");
+                            posts.Add(new() {
+                                Title = post.title,
+                                AuthorName = post.contentBody.AuthorName,
+                                Body = post.contentBody.Body,
+                                Tags = post.contentBody.Category,
+                                Excerpt = post.contentBody.Excerpt,
+                                Image_URL = post.contentBody.Image_URL,
+                                PublishDate = post.contentBody.PublishDate.DateTime,
+                                PostID = Path.GetFileName(postFolderPath),
+                            });
+
+                        }
+
+                    }
+
+                    this.FileOutputUtility.CreateCSVFile(
+                        filePathWithinRoot: "Files Summary.csv",
+                        records: posts
+                    );
+
+                    break;
+
+                case "AnalyzeFiles":
+
+                    // UNZIP IF SPECIFIED
+
+                    if (this.Config.PackagedFiles_ZipFilePath != null) {
+
+                        ZipFile.ExtractToDirectory(this.Config.PackagedFiles_ZipFilePath, Path.Combine(this.Config.PackagedFiles_FolderPath, "Packaged Files"));
+
+                    }
+
+                    // MOVE ALL FILES INTO A NESTED "Packaged Files" FOLDER IF NOT ALREADY DONE
+
+                    subDirectoryPaths = Directory.GetDirectories(this.Config.PackagedFiles_FolderPath).ToList();
+                    if (subDirectoryPaths.Count == 0 || Path.GetFileName(subDirectoryPaths[0]) != "Packaged Files") {
+                        string oldPath = this.Config.PackagedFiles_FolderPath;
+                        string newPath = Path.Combine(this.Config.PackagedFiles_FolderPath, "Packaged Files");
+                        this.MoveAll(oldPath, newPath);
+                    }
+
+                    // SCAN THE DIRECTORY AND BUILD A LIST OF WHAT FOLDERS AND FILES NEED TO BE PROCESSED
+
+                    directory = this.ScanDirectory(
+                        directoryPath: Path.Combine(this.Config.PackagedFiles_FolderPath, "Packaged Files"),
+                        rootPath: Path.Combine(this.Config.PackagedFiles_FolderPath, "Packaged Files"),
+                        isPackaged: true
+                    );
+
+                    // PROCESS THE DIRECTORY
+
+                    this.CreateSummary(directory.GetAllFiles());
+
+                    break;
 
             }
 
@@ -269,6 +341,42 @@ public class SFECMSUtils {
             this.FileOutputUtility.CreateFile(
                 filePathWithinRoot: Path.Combine(outputFileWrapperFolderPath, "_meta.json"),
                 fileContents: JsonSerializer.Serialize(file.CMSMetaJSON, JSON_MetaContext.Default.JSON_Meta)
+            );
+
+        });
+
+    }
+
+    private void PackageBlogPosts(List<CMSBlogPost> posts) {
+
+        posts.ForEach(post => {
+
+            // CREATE PATHS
+
+            string outputFileWrapperFolderPath = Path.Combine(this.Config.PackagedFiles_FolderPath, post.CMSPath, post.ID);
+
+            // CREATE NEW FOLDERS
+
+            if (!Directory.Exists(this.Config.PackagedFiles_FolderPath)) {
+                Directory.CreateDirectory(this.Config.PackagedFiles_FolderPath);
+            }
+
+            if (!Directory.Exists(outputFileWrapperFolderPath)) {
+                Directory.CreateDirectory(outputFileWrapperFolderPath);
+            }
+
+            // CREATE THE JSON FILES
+
+            var options = new JsonSerializerOptions {
+                Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+                WriteIndented = true
+            };
+
+            var context = new JSON_Content_BlogPostContext(options);
+
+            this.FileOutputUtility.CreateFile(
+                filePathWithinRoot: Path.Combine(outputFileWrapperFolderPath, "content.json"),
+                fileContents: JsonSerializer.Serialize(post.CMSContentJSON, context.JSON_Content_BlogPost)
             );
 
         });
